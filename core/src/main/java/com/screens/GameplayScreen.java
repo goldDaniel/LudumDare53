@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -84,9 +85,10 @@ public class GameplayScreen extends GameScreen
                 readX = 0;
             }
 
-            for(int x = 0; x < worldWidthTiles; x++)
+            for(int y = 0; y < worldHeightTiles; y++)
             {
-                for(int y = 0; y < worldHeightTiles; y++)
+                int layerWidth = 1;
+                for(int x = 0; x < worldWidthTiles; x++)
                 {
                     if(tileValues[x][y] == 1)
                     {
@@ -95,7 +97,27 @@ public class GameplayScreen extends GameScreen
 
                         Entity e = ecsEngine.createEntity();
                         PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
-                        p.position.set(x + 0.5f, -y + 0.5f);
+                        p.position.set(x + 0.5f, 0.5f - y);
+                        p.previousPosition.set(p.position);
+
+                        DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
+                        d.scale.set(width, height);
+                    }
+
+                    if(tileValues[x][y] == 1 && x < worldWidthTiles - 1 && tileValues[x + 1][y] == 1)
+                    {
+                        layerWidth++;
+                    }
+                    else if(tileValues[x][y] == 1 &&
+                          ((x < worldWidthTiles - 1 && tileValues[x + 1][y] == 0) || x == worldWidthTiles - 1))
+                    {
+                        float width = (float)layerWidth;
+                        float height = 1;
+
+                        Entity e = ecsEngine.createEntity();
+                        PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
+                        p.position.set(x - layerWidth / 2.f + 0.5f, 0.5f - y);
+                        p.previousPosition.set(p.position);
 
                         BodyDef bodyDef = new BodyDef();
                         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -107,11 +129,10 @@ public class GameplayScreen extends GameScreen
                         shape.setAsBox(width / 2.f,height / 2.f);
 
                         fixDef.shape = shape;
+                        fixDef.friction = 0.7f;
 
                         e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
-
-                        DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
-                        d.scale.set(width, height);
+                        layerWidth = 1;
                     }
                 }
             }
@@ -124,7 +145,7 @@ public class GameplayScreen extends GameScreen
             float worldX = player.getFloat("x") / tileSize + tileSize / 2.f;
             float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
 
-            float width = 1;
+            float width = 2;
             float height = 1;
 
             Entity e = ecsEngine.createEntity();
@@ -139,7 +160,7 @@ public class GameplayScreen extends GameScreen
             FixtureDef fixDef = new FixtureDef();
 
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(width / 2.f,height / 2.f);
+            shape.setAsBox(width / 2.f, height / 2.f);
 
             fixDef.shape = shape;
             fixDef.density = 0.01f;
@@ -148,13 +169,14 @@ public class GameplayScreen extends GameScreen
             c.tag = "player";
 
             e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
+
             e.addComponent(new InputComponent());
 
             DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
             d.scale.set(width, height);
             d.currentColor.set(Color.RED);
+            d.texture = RenderResources.getTexture("textures/entities/car.png");
         }
-
     }
 
 

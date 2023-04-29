@@ -27,6 +27,7 @@ public class MovementSystem extends System
         PhysicsComponent p = entity.getComponent(PhysicsComponent.class);
 
         Vector2 speed = new Vector2();
+        Vector2 angularSpeed = new Vector2();
 
         if(Gdx.input.isKeyJustPressed(i.up))
         {
@@ -43,6 +44,20 @@ public class MovementSystem extends System
         if(Gdx.input.isKeyPressed(i.right))
         {
             speed.x += 1;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.Q))
+        {
+            angularSpeed.y += 1;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.E))
+        {
+            angularSpeed.y -= 1;
+        }
+
+        if(angularSpeed.len2() > 0)
+        {
+            angularSpeed.nor().scl(1);
+            p.body.applyTorque(angularSpeed.y, true);
         }
 
         if(speed.len2() > 0)
