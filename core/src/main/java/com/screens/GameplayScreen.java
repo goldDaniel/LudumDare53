@@ -23,6 +23,7 @@ import com.ecs.Entity;
 import com.ecs.components.*;
 import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.ResizeEvent;
+import com.ecs.events.WheelOnGroundEvent;
 import com.ecs.systems.*;
 
 import javax.swing.text.html.HTML;
@@ -45,6 +46,7 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
+        ecsEngine.registerPhysicsSystem(new InAirSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
@@ -165,6 +167,7 @@ public class GameplayScreen extends GameScreen
             fixDef.density = 0.01f;
 
             e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
+            //e.addComponent(new InAirComponent());
 
             e.addComponent(new InputComponent());
 
@@ -226,7 +229,7 @@ public class GameplayScreen extends GameScreen
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
                         Entity e = (Entity)joints.get(0).other.getUserData();
-                        e.removeComponent(InAirComponent.class);
+                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
                     }
                 }
                 else if(fixB.getBody().getUserData() == wheel)
@@ -235,7 +238,7 @@ public class GameplayScreen extends GameScreen
                     {
                         Array<JointEdge> joints = fixB.getBody().getJointList();
                         Entity e = (Entity)joints.get(0).other.getUserData();
-                        e.removeComponent(InAirComponent.class);
+                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
                     }
                 }
             }
@@ -251,7 +254,7 @@ public class GameplayScreen extends GameScreen
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
                         Entity e = (Entity)joints.get(0).other.getUserData();
-                        if(!e.hasComponent(InAirComponent.class)) e.addComponent(new InAirComponent());
+                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
                     }
                 }
                 else if(fixB.getBody().getUserData() == wheel)
@@ -260,7 +263,7 @@ public class GameplayScreen extends GameScreen
                     {
                         Array<JointEdge> joints = fixB.getBody().getJointList();
                         Entity e = (Entity)joints.get(0).other.getUserData();
-                        if(!e.hasComponent(InAirComponent.class)) e.addComponent(new InAirComponent());
+                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
                     }
                 }
             }
