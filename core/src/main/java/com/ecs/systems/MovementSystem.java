@@ -31,7 +31,7 @@ public class MovementSystem extends System
 
         if(Gdx.input.isKeyJustPressed(i.up))
         {
-            p.body.applyLinearImpulse(new Vector2(0.f, 1.25f), p.body.getPosition(), true);
+            p.body.applyLinearImpulse(new Vector2(0.f, 0.25f), p.body.getPosition(), true);
         }
         if(Gdx.input.isKeyPressed(i.down))
         {
@@ -62,7 +62,7 @@ public class MovementSystem extends System
 
         if(speed.len2() > 0)
         {
-            speed.nor().scl(1);
+            speed.nor().scl(.25f);
             p.body.applyForceToCenter(speed, true);
         }
     }

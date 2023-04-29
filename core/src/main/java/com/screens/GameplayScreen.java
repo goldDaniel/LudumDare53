@@ -7,10 +7,13 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.JsonReader;
@@ -145,8 +148,8 @@ public class GameplayScreen extends GameScreen
             float worldX = player.getFloat("x") / tileSize + tileSize / 2.f;
             float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
 
-            float width = 2;
-            float height = 1;
+            float width = 2.5f;
+            float height = 0.5f;
 
             Entity e = ecsEngine.createEntity();
             PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
@@ -165,9 +168,6 @@ public class GameplayScreen extends GameScreen
             fixDef.shape = shape;
             fixDef.density = 0.01f;
 
-            TagComponent c = (TagComponent) e.addComponent(new TagComponent());
-            c.tag = "player";
-
             e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
 
             e.addComponent(new InputComponent());
@@ -176,6 +176,67 @@ public class GameplayScreen extends GameScreen
             d.scale.set(width, height);
             d.currentColor.set(Color.RED);
             d.texture = RenderResources.getTexture("textures/entities/car.png");
+            {
+
+
+                BodyDef frontWheel = new BodyDef();
+                frontWheel.type = BodyDef.BodyType.DynamicBody;
+                frontWheel.position.set(worldX, worldY - height * 2);
+
+                FixtureDef wheelDef = new FixtureDef();
+
+                CircleShape cs = new CircleShape();
+                cs.setPosition(new Vector2());
+                cs.setRadius(0.25f);
+                wheelDef.shape = cs;
+                wheelDef.density = 0.01f;
+
+                {
+                    Entity wheel = ecsEngine.createEntity();
+
+                    PhysicsComponent wheelP = PhysicsSystem.createComponentFromDefinition(frontWheel, wheelDef);
+                    RevoluteJointDef frontWheelJoint = new RevoluteJointDef();
+                    frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
+                    frontWheelJoint.bodyB = wheelP.body;
+                    frontWheelJoint.collideConnected = false;
+                    frontWheelJoint.localAnchorA.set(width / 2 ,-0.5f);
+                    PhysicsSystem.createJoint(frontWheelJoint);
+
+                    wheel.addComponent(wheelP);
+                    PositionComponent wheelPos = (PositionComponent)wheel.addComponent(new PositionComponent());
+                    wheelPos.position.set(wheelP.body.getPosition());
+                    wheelPos.previousPosition.set(wheelPos.position);
+
+                    DrawComponent wheelDraw = (DrawComponent)wheel.addComponent(new DrawComponent());
+                    wheelDraw.scale.set(0.5f, 0.5f);
+                    wheelDraw.currentColor.set(Color.GREEN);
+                }
+
+                {
+                    Entity wheel = ecsEngine.createEntity();
+
+                    PhysicsComponent wheelP = PhysicsSystem.createComponentFromDefinition(frontWheel, wheelDef);
+                    RevoluteJointDef frontWheelJoint = new RevoluteJointDef();
+                    frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
+                    frontWheelJoint.bodyB = wheelP.body;
+                    frontWheelJoint.collideConnected = false;
+                    frontWheelJoint.localAnchorA.set(-width / 2 ,-0.5f);
+                    PhysicsSystem.createJoint(frontWheelJoint);
+
+                    wheel.addComponent(wheelP);
+                    PositionComponent wheelPos = (PositionComponent)wheel.addComponent(new PositionComponent());
+                    wheelPos.position.set(wheelP.body.getPosition());
+                    wheelPos.previousPosition.set(wheelPos.position);
+
+                    DrawComponent wheelDraw = (DrawComponent)wheel.addComponent(new DrawComponent());
+                    wheelDraw.scale.set(0.5f, 0.5f);
+                    wheelDraw.currentColor.set(Color.GREEN);
+                }
+            }
+
+
+            TagComponent c = (TagComponent) e.addComponent(new TagComponent());
+            c.tag = "player";
         }
     }
 

@@ -2,12 +2,11 @@ package com.ecs.systems;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -29,11 +28,9 @@ public class PhysicsSystem extends System
         return result;
     }
 
-    public static void createJoint(Body bodyA, Body bodyB)
+    public static Joint createJoint(RevoluteJointDef joint)
     {
-        WeldJointDef defJoint = new WeldJointDef();
-        defJoint.initialize(bodyA, bodyB, new Vector2(0, 0));
-        world.createJoint(defJoint);
+        return world.createJoint(joint);
     }
 
     public PhysicsSystem(Engine engine)
@@ -44,7 +41,7 @@ public class PhysicsSystem extends System
         {
             world.dispose();
         }
-        world = new World(new Vector2(0.f, -50.f), true);
+        world = new World(new Vector2(0.f, -30.f), true);
 
 
         registerComponentType(PositionComponent.class);
