@@ -132,7 +132,7 @@ public class Engine
         }
     }
 
-    public void addEvent(Event event)
+    public void fireEvent(Event event)
     {
         for (System s : physicsSystems)
         {

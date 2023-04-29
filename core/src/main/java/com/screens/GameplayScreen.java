@@ -51,7 +51,7 @@ public class GameplayScreen extends GameScreen
         d.scale.x = 10;
         d.scale.y = 10;
 
-        ecsEngine.addEvent(new CameraUpdateEvent(null, new OrthographicCamera(128, 128)));
+        ecsEngine.fireEvent(new CameraUpdateEvent(null, new OrthographicCamera(128, 128)));
     }
 
     @Override
@@ -104,6 +104,6 @@ public class GameplayScreen extends GameScreen
     public void resize(int width, int height)
     {
         super.resize(width, height);
-        ecsEngine.addEvent(new ResizeEvent(null, width, height));
+        ecsEngine.fireEvent(new ResizeEvent(null, width, height));
     }
 }
