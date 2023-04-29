@@ -225,20 +225,19 @@ public class GameplayScreen extends GameScreen
             {
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
+
+                if(fixA.getBody().getUserData() != wheel)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
                 if(fixA.getBody().getUserData() == wheel)
                 {
                     if(fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
-                        Entity e = (Entity)joints.get(0).other.getUserData();
-                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
-                    }
-                }
-                else if(fixB.getBody().getUserData() == wheel)
-                {
-                    if(fixA.getBody().getType() == BodyDef.BodyType.StaticBody)
-                    {
-                        Array<JointEdge> joints = fixB.getBody().getJointList();
                         Entity e = (Entity)joints.get(0).other.getUserData();
                         ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
                     }
@@ -250,20 +249,19 @@ public class GameplayScreen extends GameScreen
             {
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
+
+                if(fixA.getBody().getUserData() != wheel)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
                 if(fixA.getBody().getUserData() == wheel)
                 {
                     if(fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
-                        Entity e = (Entity)joints.get(0).other.getUserData();
-                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
-                    }
-                }
-                else if(fixB.getBody().getUserData() == wheel)
-                {
-                    if(fixA.getBody().getType() == BodyDef.BodyType.StaticBody)
-                    {
-                        Array<JointEdge> joints = fixB.getBody().getJointList();
                         Entity e = (Entity)joints.get(0).other.getUserData();
                         ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
                     }
