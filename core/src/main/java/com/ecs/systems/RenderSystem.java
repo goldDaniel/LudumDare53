@@ -61,6 +61,7 @@ public class RenderSystem extends System
         {
             CameraUpdateEvent e = (CameraUpdateEvent)event;
             viewport.setCamera(e.cam);
+            viewport.apply();
         }
     }
 
@@ -76,7 +77,6 @@ public class RenderSystem extends System
     {
         PositionComponent p = entity.getComponent(PositionComponent.class);
         DrawComponent d = entity.getComponent(DrawComponent.class);
-
 
         Vector2 position = new Vector2();
         position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
