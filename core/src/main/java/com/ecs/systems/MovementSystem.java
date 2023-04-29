@@ -35,7 +35,7 @@ public class MovementSystem extends System
 
         if(Gdx.input.isKeyJustPressed(i.up) && !entity.hasComponent(InAirComponent.class))
         {
-            p.body.applyLinearImpulse(new Vector2(0.f, .5f), p.body.getPosition(), true);
+            p.body.applyLinearImpulse(new Vector2(0.f, 1.0f), p.body.getPosition(), true);
         }
         if(Gdx.input.isKeyPressed(i.down))
         {
