@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.core.Collisions;
 import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
@@ -143,8 +146,8 @@ public class GameplayScreen extends GameScreen
         {
             JsonValue player = root.get("entities").get("Player").get(0);
 
-            float worldX = player.getFloat("x") / tileSize + tileSize / 2.f;
-            float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
+            float worldX = player.getFloat("x") / tileSize + 1 / 2.f;
+            float worldY = -player.getFloat("y") / tileSize + 1 / 2.f;
 
             float width = 2.5f;
             float height = 0.25f;
@@ -184,9 +187,12 @@ public class GameplayScreen extends GameScreen
 
     private void createWheel(Entity e, float offsetX, float offsetY)
     {
+        PositionComponent entityPos = e.getComponent(PositionComponent.class);
+
         BodyDef frontWheel = new BodyDef();
         frontWheel.type = BodyDef.BodyType.DynamicBody;
         frontWheel.angularDamping = 500f;
+        frontWheel.position.set(entityPos.position).add(offsetX, offsetY);
 
         FixtureDef wheelDef = new FixtureDef();
 
@@ -223,22 +229,20 @@ public class GameplayScreen extends GameScreen
             {
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() != wheel)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
                 if(fixA.getBody().getUserData() == wheel)
                 {
-                    if(fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
+                    if (fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
-                        Entity e = (Entity)joints.get(0).other.getUserData();
-                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
-                    }
-                }
-                else if(fixB.getBody().getUserData() == wheel)
-                {
-                    if(fixA.getBody().getType() == BodyDef.BodyType.StaticBody)
-                    {
-                        Array<JointEdge> joints = fixB.getBody().getJointList();
-                        Entity e = (Entity)joints.get(0).other.getUserData();
-                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
+                        Entity e = (Entity) joints.get(0).other.getUserData();
+                        if (touchingTop(fixA, fixB)) ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
                     }
                 }
             }
@@ -248,21 +252,19 @@ public class GameplayScreen extends GameScreen
             {
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() != wheel)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
                 if(fixA.getBody().getUserData() == wheel)
                 {
-                    if(fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
+                    if (fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
-                        Entity e = (Entity)joints.get(0).other.getUserData();
-                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
-                    }
-                }
-                else if(fixB.getBody().getUserData() == wheel)
-                {
-                    if(fixA.getBody().getType() == BodyDef.BodyType.StaticBody)
-                    {
-                        Array<JointEdge> joints = fixB.getBody().getJointList();
-                        Entity e = (Entity)joints.get(0).other.getUserData();
+                        Entity e = (Entity) joints.get(0).other.getUserData();
                         ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
                     }
                 }
@@ -282,6 +284,39 @@ public class GameplayScreen extends GameScreen
         };
 
         PhysicsSystem.addContactListener(listener);
+    }
+
+    // determines if fixA is touching top of fixB
+    public static boolean touchingTop(Fixture fixA, Fixture fixB)
+    {
+        Rectangle r0 = new Rectangle();
+        r0.width = fixA.getShape().getRadius() * 2;
+        r0.height = fixA.getShape().getRadius() * 2;
+        r0.x = fixA.getBody().getPosition().x - r0.width / 2;
+        r0.y = fixA.getBody().getPosition().y - r0.height / 2;
+
+        Rectangle r1 = new Rectangle();
+        PolygonShape terrainShape = (PolygonShape)fixB.getShape();
+        Vector2 vert = new Vector2();
+        Vector2 min = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        Vector2 max = new Vector2(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        for(int i = 0; i < terrainShape.getVertexCount(); i++)
+        {
+            terrainShape.getVertex(i, vert);
+            if(vert.x > max.x) max.x = vert.x;
+            else if(vert.x < min.x) min.x = vert.x;
+
+            if(vert.y > max.y) max.y = vert.y;
+            else if(vert.y < min.y) min.y = vert.y;
+        }
+        r1.width = max.x - min.x;
+        r1.height = max.y - min.y;
+        r1.x = fixB.getBody().getPosition().x - r1.width / 2;
+        r1.y = fixB.getBody().getPosition().y - r1.height / 2;
+
+        Collisions.CollisionSide side = Collisions.getCollisionSide(r0, r1);
+
+        return side == Collisions.CollisionSide.Top;
     }
 
     @Override
