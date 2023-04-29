@@ -11,10 +11,7 @@ import com.core.ContactListenerGroup;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
-import com.ecs.components.DrawComponent;
-import com.ecs.components.InAirComponent;
-import com.ecs.components.PhysicsComponent;
-import com.ecs.components.PositionComponent;
+import com.ecs.components.*;
 import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.Event;
 import com.ecs.events.ResizeEvent;
@@ -86,12 +83,13 @@ public class PhysicsSystem extends System
         if(e.hasComponent(DrawComponent.class))
         {
             DrawComponent d = e.getComponent(DrawComponent.class);
+            d.rotation = phys.body.getLinearVelocity().angleDeg();
             if(!e.hasComponent(InAirComponent.class))
             {
                 float velocityX = phys.body.getLinearVelocity().x;
-                if(Math.abs(velocityX) > 0)
+                if (Math.abs(velocityX) > 0)
                 {
-                    if(velocityX < 0)
+                    if (velocityX < 0)
                     {
                         d.rotation = 180;
                     }
@@ -114,6 +112,8 @@ public class PhysicsSystem extends System
                     d.rotation -= 360;
                 }
             }
+
+            phys.body.setTransform(phys.body.getPosition(), MathUtils.degreesToRadians * d.rotation);
         }
     }
 
@@ -121,7 +121,7 @@ public class PhysicsSystem extends System
     protected void postUpdate()
     {
         super.postUpdate();
-        //debugRenderer.render(world, viewport.getCamera().combined);
+        debugRenderer.render(world, viewport.getCamera().combined);
     }
 
     @Override

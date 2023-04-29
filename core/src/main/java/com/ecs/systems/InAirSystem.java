@@ -27,7 +27,7 @@ public class InAirSystem extends System
     {
         if(onGroundCount.containsKey(entity))
         {
-            if(onGroundCount.get(entity) == 2)
+            if(onGroundCount.get(entity) >= 2)
             {
                 entity.removeComponent(InAirComponent.class);
             }
