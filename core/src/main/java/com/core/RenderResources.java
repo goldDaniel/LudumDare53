@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ArrayMap;
 
+import java.io.IOException;
+
 public class RenderResources
 {
     private static boolean hasInitialized = false;
@@ -56,7 +58,33 @@ public class RenderResources
         }
         else
         {
-            return getTexture("textures/default.png");
+            try
+            {
+                return getDefaultTexture("textures/default.png");
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    public static Texture getDefaultTexture(String fileName) throws IOException
+    {
+        FileHandle handle = Gdx.files.internal(fileName);
+        if(handle.file().exists())
+        {
+            Texture t = new Texture(handle, true);
+            t.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+            textures.put(fileName, t);
+            return t;
+        }
+        else
+        {
+            throw new IOException("Default texture not found.");
         }
     }
 

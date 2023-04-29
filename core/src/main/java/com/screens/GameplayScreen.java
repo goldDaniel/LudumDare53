@@ -35,12 +35,6 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
-    }
-
-    @Override
-    public void show()
-    {
-        super.show();
 
         Entity e = ecsEngine.createEntity();
 
@@ -52,6 +46,12 @@ public class GameplayScreen extends GameScreen
         d.scale.y = 10;
 
         ecsEngine.fireEvent(new CameraUpdateEvent(null, new OrthographicCamera(128, 128)));
+    }
+
+    @Override
+    public void show()
+    {
+        super.show();
     }
 
     @Override
