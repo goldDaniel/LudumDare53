@@ -1488,16 +1488,16 @@
 					"entityInstances": [
 						{
 							"__identifier": "Player",
-							"__grid": [3,16],
+							"__grid": [70,26],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
 							"__smartColor": "#26FF00",
-							"iid": "2d53a380-c640-11ed-8747-1702217482de",
+							"iid": "30f8d920-c640-11ed-b356-f7f1a8630626",
 							"width": 32,
 							"height": 32,
 							"defUid": 47,
-							"px": [96,512],
+							"px": [2240,832],
 							"fieldInstances": []
 						}
 					]

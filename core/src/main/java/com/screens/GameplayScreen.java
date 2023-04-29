@@ -143,8 +143,8 @@ public class GameplayScreen extends GameScreen
         {
             JsonValue player = root.get("entities").get("Player").get(0);
 
-            float worldX = player.getFloat("x") / tileSize + tileSize / 2.f;
-            float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
+            float worldX = player.getFloat("x") / (float)tileSize + 1.0f / 2.f;
+            float worldY = -player.getFloat("y") / (float)tileSize + 1.0f / 2.f;
 
             float width = 2.5f;
             float height = 0.25f;
@@ -184,9 +184,11 @@ public class GameplayScreen extends GameScreen
 
     private void createWheel(Entity e, float offsetX, float offsetY)
     {
+        PositionComponent ePos = e.getComponent(PositionComponent.class);
         BodyDef frontWheel = new BodyDef();
         frontWheel.type = BodyDef.BodyType.DynamicBody;
         frontWheel.angularDamping = 500f;
+        frontWheel.position.set(ePos.position).add(offsetX, offsetY);
 
         FixtureDef wheelDef = new FixtureDef();
 
