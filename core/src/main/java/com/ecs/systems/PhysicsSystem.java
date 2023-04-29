@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.core.ContactListenerGroup;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -19,19 +20,26 @@ import com.ecs.events.ResizeEvent;
 public class PhysicsSystem extends System
 {
     private static World world;
+    private static ContactListenerGroup listeners;
 
-    private static Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
+    private static final Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
     Viewport viewport = new ExtendViewport(32,32);
 
 
-    public static PhysicsComponent createComponentFromDefinition(BodyDef def, FixtureDef fixDef)
+    public static PhysicsComponent createComponentFromDefinition(Entity entity, BodyDef def, FixtureDef fixDef)
     {
         PhysicsComponent result = new PhysicsComponent();
 
         result.body = world.createBody(def);
+        result.body.setUserData(entity);
         result.fixture = result.body.createFixture(fixDef);
 
         return result;
+    }
+
+    public static void addContactListener(ContactListener listener)
+    {
+        listeners.addListener(listener);
     }
 
     public static Joint createJoint(RevoluteJointDef joint)
@@ -47,8 +55,9 @@ public class PhysicsSystem extends System
         {
             world.dispose();
         }
-        world = new World(new Vector2(0.f, -30.f), true);
-
+        world = new World(new Vector2(0.f, -20.f), true);
+        listeners = new ContactListenerGroup();
+        world.setContactListener(listeners);
 
         registerComponentType(PositionComponent.class);
         registerComponentType(PhysicsComponent.class);

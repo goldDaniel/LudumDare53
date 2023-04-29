@@ -8,14 +8,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -25,17 +23,14 @@ import com.ecs.Entity;
 import com.ecs.components.*;
 import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.ResizeEvent;
-import com.ecs.systems.CameraUpdateSystem;
-import com.ecs.systems.MovementSystem;
-import com.ecs.systems.PhysicsSystem;
-import com.ecs.systems.RenderSystem;
+import com.ecs.systems.*;
 
 import javax.swing.text.html.HTML;
 
 
 public class GameplayScreen extends GameScreen
 {
-    private Engine ecsEngine;
+    private final Engine ecsEngine;
 
     private float accumulator;
     private float elapsedTime;
@@ -132,15 +127,14 @@ public class GameplayScreen extends GameScreen
                         shape.setAsBox(width / 2.f,height / 2.f);
 
                         fixDef.shape = shape;
-                        fixDef.friction = 0.7f;
+                        fixDef.friction = 0.9f;
 
-                        e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
+                        e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
                         layerWidth = 1;
                     }
                 }
             }
         }
-
 
         {
             JsonValue player = root.get("entities").get("Player").get(0);
@@ -148,8 +142,8 @@ public class GameplayScreen extends GameScreen
             float worldX = player.getFloat("x") / tileSize + tileSize / 2.f;
             float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
 
-            float width = 2.5f;
-            float height = 1.5f;
+            float width = 3.0f;
+            float height = 1.0f;
 
             Entity e = ecsEngine.createEntity();
             PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
@@ -166,9 +160,9 @@ public class GameplayScreen extends GameScreen
             shape.setAsBox(width / 2.f, height / 2.f);
 
             fixDef.shape = shape;
-            fixDef.density = 0.01f;
+            fixDef.density = 0.1f;
 
-            e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
+            e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
 
             e.addComponent(new InputComponent());
 
@@ -176,70 +170,116 @@ public class GameplayScreen extends GameScreen
             d.scale.set(width, height);
             d.currentColor.set(Color.RED);
             d.texture = RenderResources.getTexture("textures/entities/car.png");
-            {
-
-
-                BodyDef frontWheel = new BodyDef();
-                frontWheel.type = BodyDef.BodyType.DynamicBody;
-                frontWheel.position.set(worldX, worldY - height * 2);
-
-                FixtureDef wheelDef = new FixtureDef();
-
-                CircleShape cs = new CircleShape();
-                cs.setPosition(new Vector2());
-                cs.setRadius(0.25f);
-                wheelDef.shape = cs;
-                wheelDef.density = 0.01f;
-
-                {
-                    Entity wheel = ecsEngine.createEntity();
-
-                    PhysicsComponent wheelP = PhysicsSystem.createComponentFromDefinition(frontWheel, wheelDef);
-                    RevoluteJointDef frontWheelJoint = new RevoluteJointDef();
-                    frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
-                    frontWheelJoint.bodyB = wheelP.body;
-                    frontWheelJoint.collideConnected = false;
-                    frontWheelJoint.localAnchorA.set(width / 2 ,-1.0f);
-                    PhysicsSystem.createJoint(frontWheelJoint);
-
-                    wheel.addComponent(wheelP);
-                    PositionComponent wheelPos = (PositionComponent)wheel.addComponent(new PositionComponent());
-                    wheelPos.position.set(wheelP.body.getPosition());
-                    wheelPos.previousPosition.set(wheelPos.position);
-
-                    DrawComponent wheelDraw = (DrawComponent)wheel.addComponent(new DrawComponent());
-                    wheelDraw.scale.set(0.5f, 0.5f);
-                    wheelDraw.currentColor.set(Color.GREEN);
-                }
-
-                {
-                    Entity wheel = ecsEngine.createEntity();
-
-                    PhysicsComponent wheelP = PhysicsSystem.createComponentFromDefinition(frontWheel, wheelDef);
-                    RevoluteJointDef frontWheelJoint = new RevoluteJointDef();
-                    frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
-                    frontWheelJoint.bodyB = wheelP.body;
-                    frontWheelJoint.collideConnected = false;
-                    frontWheelJoint.localAnchorA.set(-width / 2 ,-1.0f);
-                    PhysicsSystem.createJoint(frontWheelJoint);
-
-                    wheel.addComponent(wheelP);
-                    PositionComponent wheelPos = (PositionComponent)wheel.addComponent(new PositionComponent());
-                    wheelPos.position.set(wheelP.body.getPosition());
-                    wheelPos.previousPosition.set(wheelPos.position);
-
-                    DrawComponent wheelDraw = (DrawComponent)wheel.addComponent(new DrawComponent());
-                    wheelDraw.scale.set(0.5f, 0.5f);
-                    wheelDraw.currentColor.set(Color.GREEN);
-                }
-            }
-
+            createWheel(e, width / 2 - width / 6.f, -0.7f);
+            createWheel(e, width / 6.f - width / 2.f, -0.7f);
 
             TagComponent c = (TagComponent) e.addComponent(new TagComponent());
             c.tag = "player";
         }
     }
 
+    private void createWheel(Entity e, float offsetX, float offsetY)
+    {
+        BodyDef frontWheel = new BodyDef();
+        frontWheel.type = BodyDef.BodyType.DynamicBody;
+        frontWheel.angularDamping = 500f;
+
+        FixtureDef wheelDef = new FixtureDef();
+
+        CircleShape cs = new CircleShape();
+        cs.setPosition(new Vector2());
+        cs.setRadius(0.45f);
+        wheelDef.shape = cs;
+        wheelDef.density = 0.01f;
+        wheelDef.friction = 0.8f;
+        wheelDef.restitution = 0.3f;
+
+        Entity wheel = ecsEngine.createEntity();
+
+        PhysicsComponent wheelP = PhysicsSystem.createComponentFromDefinition(wheel, frontWheel, wheelDef);
+        RevoluteJointDef frontWheelJoint = new RevoluteJointDef();
+        frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
+        frontWheelJoint.bodyB = wheelP.body;
+        frontWheelJoint.collideConnected = false;
+        frontWheelJoint.localAnchorA.set(offsetX,offsetY);
+        PhysicsSystem.createJoint(frontWheelJoint);
+
+        wheel.addComponent(wheelP);
+        PositionComponent wheelPos = (PositionComponent)wheel.addComponent(new PositionComponent());
+        wheelPos.position.set(wheelP.body.getPosition());
+        wheelPos.previousPosition.set(wheelPos.position);
+
+        DrawComponent wheelDraw = (DrawComponent)wheel.addComponent(new DrawComponent());
+        wheelDraw.scale.set(0.5f, 0.5f);
+        wheelDraw.currentColor.set(Color.GREEN);
+
+        ContactListener listener = new ContactListener()
+        {
+            @Override
+            public void beginContact(Contact contact)
+            {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() == wheel)
+                {
+                    if(fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
+                    {
+                        Array<JointEdge> joints = fixA.getBody().getJointList();
+                        Entity e = (Entity)joints.get(0).other.getUserData();
+                        e.removeComponent(InAirComponent.class);
+                    }
+                }
+                else if(fixB.getBody().getUserData() == wheel)
+                {
+                    if(fixA.getBody().getType() == BodyDef.BodyType.StaticBody)
+                    {
+                        Array<JointEdge> joints = fixB.getBody().getJointList();
+                        Entity e = (Entity)joints.get(0).other.getUserData();
+                        e.removeComponent(InAirComponent.class);
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact)
+            {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() == wheel)
+                {
+                    if(fixB.getBody().getType() == BodyDef.BodyType.StaticBody)
+                    {
+                        Array<JointEdge> joints = fixA.getBody().getJointList();
+                        Entity e = (Entity)joints.get(0).other.getUserData();
+                        if(!e.hasComponent(InAirComponent.class)) e.addComponent(new InAirComponent());
+                    }
+                }
+                else if(fixB.getBody().getUserData() == wheel)
+                {
+                    if(fixA.getBody().getType() == BodyDef.BodyType.StaticBody)
+                    {
+                        Array<JointEdge> joints = fixB.getBody().getJointList();
+                        Entity e = (Entity)joints.get(0).other.getUserData();
+                        if(!e.hasComponent(InAirComponent.class)) e.addComponent(new InAirComponent());
+                    }
+                }
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold)
+            {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse)
+            {
+
+            }
+        };
+
+        PhysicsSystem.addContactListener(listener);
+    }
 
     @Override
     public void show()
