@@ -56,7 +56,7 @@ public class MovementSystem extends System
 
         if(angularSpeed.len2() > 0)
         {
-            angularSpeed.nor().scl(1);
+            angularSpeed.nor().scl(0.2f);
             p.body.applyTorque(angularSpeed.y, true);
         }
 

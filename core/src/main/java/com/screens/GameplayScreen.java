@@ -50,7 +50,7 @@ public class GameplayScreen extends GameScreen
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
-        ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
+        //ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
 
         loadLevelIntoECS();
     }
@@ -149,7 +149,7 @@ public class GameplayScreen extends GameScreen
             float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
 
             float width = 2.5f;
-            float height = 0.5f;
+            float height = 1.5f;
 
             Entity e = ecsEngine.createEntity();
             PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
@@ -199,7 +199,7 @@ public class GameplayScreen extends GameScreen
                     frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
                     frontWheelJoint.bodyB = wheelP.body;
                     frontWheelJoint.collideConnected = false;
-                    frontWheelJoint.localAnchorA.set(width / 2 ,-0.5f);
+                    frontWheelJoint.localAnchorA.set(width / 2 ,-1.0f);
                     PhysicsSystem.createJoint(frontWheelJoint);
 
                     wheel.addComponent(wheelP);
@@ -220,7 +220,7 @@ public class GameplayScreen extends GameScreen
                     frontWheelJoint.bodyA = e.getComponent(PhysicsComponent.class).body;
                     frontWheelJoint.bodyB = wheelP.body;
                     frontWheelJoint.collideConnected = false;
-                    frontWheelJoint.localAnchorA.set(-width / 2 ,-0.5f);
+                    frontWheelJoint.localAnchorA.set(-width / 2 ,-1.0f);
                     PhysicsSystem.createJoint(frontWheelJoint);
 
                     wheel.addComponent(wheelP);
@@ -289,7 +289,6 @@ public class GameplayScreen extends GameScreen
     @Override
     public void render()
     {
-        ScreenUtils.clear(Color.BLACK);
         ecsEngine.render(renderAlpha);
     }
 
