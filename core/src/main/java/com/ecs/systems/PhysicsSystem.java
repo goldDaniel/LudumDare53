@@ -1,5 +1,6 @@
 package com.ecs.systems;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -33,7 +34,7 @@ public class PhysicsSystem extends System
         {
             world.dispose();
         }
-        world = new World(new Vector2(0.f, -45.f), true);
+        world = new World(new Vector2(0.f, -50.f), true);
 
 
         registerComponentType(PositionComponent.class);
@@ -58,7 +59,7 @@ public class PhysicsSystem extends System
         if(e.hasComponent(DrawComponent.class))
         {
             DrawComponent d = e.getComponent(DrawComponent.class);
-            d.rotation = phys.body.getAngle();
+            d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
         }
     }
 }

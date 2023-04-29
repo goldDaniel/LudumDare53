@@ -39,14 +39,14 @@ public class GameplayScreen extends GameScreen
         super(game);
         ecsEngine = new Engine();
 
-        ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
+        ecsEngine.registerGameSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
 
         {
-            float width = 10;
-            float height = 10;
+            float width = 2;
+            float height = 2;
 
             Entity e = ecsEngine.createEntity();
             PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
@@ -61,21 +61,24 @@ public class GameplayScreen extends GameScreen
             shape.setAsBox(width / 2.f,height / 2.f);
 
             fixDef.shape = shape;
-            fixDef.density = 1.f;
+            fixDef.density = 0.01f;
 
             e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
+
+
+            e.addComponent(new InputComponent());
 
             DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
             d.scale.set(width, height);
         }
 
         {
-            float width = 100;
-            float height = 10;
+            float width = 32;
+            float height = 5;
 
             Entity e = ecsEngine.createEntity();
             PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
-            p.position.set(0, -64);
+            p.position.set(0, -16);
 
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.KinematicBody;
@@ -87,7 +90,6 @@ public class GameplayScreen extends GameScreen
             shape.setAsBox(width / 2.f,height / 2.f);
 
             fixDef.shape = shape;
-            fixDef.density = 1.0f;
 
             e.addComponent(PhysicsSystem.createComponentFromDefinition(bodyDef, fixDef));
 
@@ -97,7 +99,7 @@ public class GameplayScreen extends GameScreen
 
 
 
-        ecsEngine.fireEvent(new CameraUpdateEvent(null, new OrthographicCamera(128, 128)));
+        ecsEngine.fireEvent(new CameraUpdateEvent(null, new OrthographicCamera(32, 32)));
     }
 
     @Override
