@@ -142,8 +142,8 @@ public class GameplayScreen extends GameScreen
             float worldX = player.getFloat("x") / tileSize + tileSize / 2.f;
             float worldY = -player.getFloat("y") / tileSize + tileSize / 2.f;
 
-            float width = 3.0f;
-            float height = 1.0f;
+            float width = 2.5f;
+            float height = 0.25f;
 
             Entity e = ecsEngine.createEntity();
             PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());

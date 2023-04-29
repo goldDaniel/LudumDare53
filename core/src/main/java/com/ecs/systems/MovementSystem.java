@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -33,7 +35,7 @@ public class MovementSystem extends System
 
         if(Gdx.input.isKeyJustPressed(i.up) && !entity.hasComponent(InAirComponent.class))
         {
-            p.body.applyLinearImpulse(new Vector2(0.f, 7.f), p.body.getPosition(), true);
+            p.body.applyLinearImpulse(new Vector2(0.f, .5f), p.body.getPosition(), true);
         }
         if(Gdx.input.isKeyPressed(i.down))
         {
@@ -71,11 +73,35 @@ public class MovementSystem extends System
             omega *= 0.95f;
             p.body.setAngularVelocity(omega);
         }
+        else
+        {
+            float velocity = p.body.getAngularVelocity();
+            velocity *= 0.5;
+            p.body.setAngularVelocity(velocity);
+        }
 
         if(speed.len2() > 0)
         {
-            speed.nor().scl(1.25f);
-            p.body.applyLinearImpulse(speed, p.body.getPosition(), true);
+            speed.nor().scl(.50f);
+            p.body.applyForceToCenter(speed, true);
+
+            float maxXVelocity = 30;
+            Vector2 velocity = p.body.getLinearVelocity();
+            velocity.x = MathUtils.clamp(velocity.x, -maxXVelocity, maxXVelocity);
+            p.body.setLinearVelocity(velocity);
+        }
+        else
+        {
+            Vector2 velocity = p.body.getLinearVelocity();
+            velocity.x *= 0.5;
+            p.body.setLinearVelocity(velocity);
+
+            for(JointEdge j : p.body.getJointList())
+            {
+                float v = j.other.getAngularVelocity();
+                v*= 0.5;
+                j.other.setAngularVelocity(v);
+            }
         }
         else if(!entity.hasComponent(InAirComponent.class))
         {
