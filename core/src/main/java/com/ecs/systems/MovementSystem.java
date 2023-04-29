@@ -7,6 +7,7 @@ import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
 import com.ecs.components.InputComponent;
+import com.ecs.components.PhysicsComponent;
 import com.ecs.components.PositionComponent;
 
 public class MovementSystem extends System
@@ -16,14 +17,14 @@ public class MovementSystem extends System
         super(engine);
 
         registerComponentType(InputComponent.class);
-        registerComponentType(PositionComponent.class);
+        registerComponentType(PhysicsComponent.class);
     }
 
     @Override
     public void updateEntity(Entity entity, float dt)
     {
         InputComponent i = entity.getComponent(InputComponent.class);
-        PositionComponent p = entity.getComponent(PositionComponent.class);
+        PhysicsComponent p = entity.getComponent(PhysicsComponent.class);
 
         Vector2 speed = new Vector2();
 
@@ -46,10 +47,8 @@ public class MovementSystem extends System
 
         if(speed.len2() > 0)
         {
-            speed.nor().scl(32.f * dt);
+            speed.nor();
+            p.body.applyForceToCenter(speed, true);
         }
-
-        p.previousPosition.set(p.position);
-        p.position.add(speed);
     }
 }

@@ -15,6 +15,7 @@ public class Engine
 
     private boolean isUpdating = false;
 
+    private float phyicsUpdateRate = 1.0f/60.f;
 
     public <T extends System> void registerPhysicsSystem(T system)
     {
@@ -83,7 +84,17 @@ public class Engine
         return result;
     }
 
-    public void physicsUpdate(float dt)
+    public void setPhysicsUpdateRate(float delta)
+    {
+        phyicsUpdateRate = delta;
+    }
+
+    public float getPhysicsUpdateRate()
+    {
+        return phyicsUpdateRate;
+    }
+
+    public void physicsUpdate()
     {
         isUpdating = true;
         {
@@ -91,7 +102,7 @@ public class Engine
             {
                 if(physicsSystems.get(i).isEnabled())
                 {
-                    physicsSystems.get(i).update(dt);
+                    physicsSystems.get(i).update(phyicsUpdateRate);
                 }
             }
         }

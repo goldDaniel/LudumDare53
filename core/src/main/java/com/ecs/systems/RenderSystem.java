@@ -1,7 +1,9 @@
 package com.ecs.systems;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -100,11 +102,21 @@ public class RenderSystem extends System
 
             if(d.facingLeft)
             {
-                sb.draw(d.texture, pos.x + width / 2, pos.y - height / 2, -width, height);
+                sb.draw(new TextureRegion(d.texture),
+                    pos.x - width / 2f, pos.y - height / 2f,
+                    width / 2, height / 2,
+                    -width, height,
+                    1f, 1f,
+                    d.rotation);
             }
             else
             {
-                sb.draw(d.texture, pos.x - width / 2, pos.y - height / 2, width, height);
+                sb.draw(new TextureRegion(d.texture),
+                    pos.x - width / 2f, pos.y - height / 2f,
+                    width / 2, height / 2,
+                     width, height,
+                    1f, 1f,
+                    d.rotation);
             }
         }
 
