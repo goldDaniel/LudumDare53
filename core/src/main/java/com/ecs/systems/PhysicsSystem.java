@@ -83,7 +83,6 @@ public class PhysicsSystem extends System
         if(e.hasComponent(DrawComponent.class))
         {
             DrawComponent d = e.getComponent(DrawComponent.class);
-            d.rotation = phys.body.getLinearVelocity().angleDeg();
             if(!e.hasComponent(InAirComponent.class))
             {
                 float velocityX = phys.body.getLinearVelocity().x;
