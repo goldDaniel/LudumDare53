@@ -1,8 +1,6 @@
 package com.ecs;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Queue;
 import com.ecs.events.Event;
 
 public class Engine
@@ -15,27 +13,20 @@ public class Engine
     private final Array<System> physicsSystems = new Array<>();
     private final Array<System> gameSystems = new Array<>();
 
-    private final Queue<Event> events = new Queue<>();
-
     private boolean isUpdating = false;
 
 
-    public Engine()
-    {
-    }
-
-
-    public <T extends System> void RegisterPhysicsSystem(T system)
+    public <T extends System> void registerPhysicsSystem(T system)
     {
         physicsSystems.add(system);
     }
 
-    public <T extends System> void RegisterGameSystem(T system)
+    public <T extends System> void registerGameSystem(T system)
     {
         gameSystems.add(system);
     }
 
-    public <T extends System> void RegisterRenderSystem(T system)
+    public <T extends System> void registerRenderSystem(T system)
     {
         renderSystems.add(system);
     }
@@ -103,28 +94,8 @@ public class Engine
                     physicsSystems.get(i).update(dt);
                 }
             }
-
-            while (events.notEmpty())
-            {
-                Event e = events.removeFirst();
-                for (System s : physicsSystems)
-                {
-                    s.receiveEvent(e);
-                }
-                for (System s : physicsSystems)
-                {
-                    s.receiveEvent(e);
-                }
-            }
         }
         isUpdating = false;
-
-        activeEntities.removeAll(deadEntities, true);
-        Entity.destroy(deadEntities);
-        deadEntities.clear();
-
-        activeEntities.addAll(createdEntities);
-        createdEntities.clear();
     }
 
     public void gameUpdate(float dt)
@@ -138,20 +109,8 @@ public class Engine
                     gameSystems.get(i).update(dt);
                 }
             }
-
-            while (events.notEmpty())
-            {
-                Event e = events.removeFirst();
-                for (System s : gameSystems)
-                {
-                    s.receiveEvent(e);
-                }
-                for (System s : renderSystems)
-                {
-                    s.receiveEvent(e);
-                }
-            }
         }
+
         isUpdating = false;
 
         activeEntities.removeAll(deadEntities, true);
@@ -175,7 +134,18 @@ public class Engine
 
     public void addEvent(Event event)
     {
-        events.addLast(event);
+        for (System s : physicsSystems)
+        {
+            s.receiveEvent(event);
+        }
+        for (System s : gameSystems)
+        {
+            s.receiveEvent(event);
+        }
+        for (System s : renderSystems)
+        {
+            s.receiveEvent(event);
+        }
     }
 
     public <T extends System> void enableSystem(Class<T> clazz)

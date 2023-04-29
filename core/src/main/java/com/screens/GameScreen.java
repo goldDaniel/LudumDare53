@@ -13,10 +13,10 @@ import com.core.RenderResources;
 
 public abstract class GameScreen implements Screen
 {
-    private InputMultiplexer multiplexer;
-    private GameSkin skin;
-    private Stage uiStage;
-    private Viewport viewport;
+    private final InputMultiplexer multiplexer;
+    private final GameSkin skin;
+    private final Stage uiStage;
+    private final Viewport viewport;
 
     protected Game game;
 
@@ -55,6 +55,11 @@ public abstract class GameScreen implements Screen
     protected final void addInputProcessor(InputProcessor processor)
     {
         multiplexer.addProcessor(processor);
+    }
+
+    protected final void removeInputProcessor(InputProcessor processor)
+    {
+        multiplexer.removeProcessor(processor);
     }
 
     protected final void transitionTo(GameScreen screen)

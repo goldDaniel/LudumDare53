@@ -4,10 +4,19 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.core.RenderResources;
 import com.ecs.Engine;
+import com.ecs.Entity;
+import com.ecs.components.DrawComponent;
+import com.ecs.components.PositionComponent;
+import com.ecs.events.CameraUpdateEvent;
+import com.ecs.events.ResizeEvent;
+import com.ecs.systems.MovementSystem;
+import com.ecs.systems.RenderSystem;
 
 
 public class GameplayScreen extends GameScreen
@@ -22,12 +31,24 @@ public class GameplayScreen extends GameScreen
     {
         super(game);
         ecsEngine = new Engine();
+
+        ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
+        ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
     }
 
     @Override
     public void show()
     {
         super.show();
+
+        Entity e = ecsEngine.createEntity();
+
+        e.addComponent(new PositionComponent());
+        DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
+        d.scale.x = 10;
+        d.scale.y = 10;
+
+        ecsEngine.addEvent(new CameraUpdateEvent(null, new OrthographicCamera(128, 128)));
     }
 
     @Override
@@ -52,6 +73,10 @@ public class GameplayScreen extends GameScreen
 
         final float timeStep = 1.f/60.f;
 
+
+        ecsEngine.gameUpdate(dt);
+
+
         accumulator += dt;
 
         while(accumulator >= timeStep)
@@ -60,7 +85,6 @@ public class GameplayScreen extends GameScreen
             accumulator -= timeStep;
         }
 
-        ecsEngine.gameUpdate(dt);
         elapsedTime += dt;
 
         renderAlpha = accumulator / timeStep;
@@ -69,13 +93,14 @@ public class GameplayScreen extends GameScreen
     @Override
     public void render()
     {
-        ScreenUtils.clear(Color.SKY);
+        ScreenUtils.clear(Color.BLACK);
         ecsEngine.render(renderAlpha);
     }
 
     @Override
     public void resize(int width, int height)
     {
-
+        super.resize(width, height);
+        ecsEngine.addEvent(new ResizeEvent(null, width, height));
     }
 }
