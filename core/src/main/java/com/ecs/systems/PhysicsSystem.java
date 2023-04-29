@@ -1,5 +1,6 @@
 package com.ecs.systems;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -85,6 +86,7 @@ public class PhysicsSystem extends System
         {
             DrawComponent d = e.getComponent(DrawComponent.class);
             d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
+            d.rotation %= 360;
         }
     }
 
@@ -92,7 +94,7 @@ public class PhysicsSystem extends System
     protected void postUpdate()
     {
         super.postUpdate();
-        debugRenderer.render(world, viewport.getCamera().combined);
+        //debugRenderer.render(world, viewport.getCamera().combined);
     }
 
     @Override

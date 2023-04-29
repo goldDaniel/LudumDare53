@@ -1,5 +1,6 @@
 package com.ecs.systems;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -100,13 +101,20 @@ public class RenderSystem extends System
             float width = d.scale.x;
             float height = d.scale.y;
 
-            if(d.facingLeft)
+            boolean facingLeft = d.facingLeft;
+
+            if(d.rotation > 90 && d.rotation < 270)
+            {
+                facingLeft = !facingLeft;
+            }
+
+            if(facingLeft)
             {
                 sb.draw(new TextureRegion(d.texture),
                     pos.x - width / 2f, pos.y - height / 2f,
                     width / 2, height / 2,
-                    -width, height,
-                    1f, 1f,
+                    width, height,
+                    1f, -1f,
                     d.rotation);
             }
             else

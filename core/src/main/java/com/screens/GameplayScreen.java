@@ -45,7 +45,7 @@ public class GameplayScreen extends GameScreen
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
-        //ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
+        ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
 
         loadLevelIntoECS();
     }
@@ -114,7 +114,7 @@ public class GameplayScreen extends GameScreen
 
                         Entity e = ecsEngine.createEntity();
                         PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
-                        p.position.set(x - layerWidth / 2.f + 0.5f, 0.5f - y);
+                        p.position.set(x - layerWidth / 2.f + 1, 0.5f - y);
                         p.previousPosition.set(p.position);
 
                         BodyDef bodyDef = new BodyDef();
@@ -167,8 +167,7 @@ public class GameplayScreen extends GameScreen
             e.addComponent(new InputComponent());
 
             DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
-            d.scale.set(width, height);
-            d.currentColor.set(Color.RED);
+            d.scale.set(2.77f * 2, 1 * 2);
             d.texture = RenderResources.getTexture("textures/entities/car.png");
             createWheel(e, width / 2 - width / 6.f, -0.7f);
             createWheel(e, width / 6.f - width / 2.f, -0.7f);
