@@ -41,7 +41,9 @@ public class GameplayScreen extends GameScreen
         super(game);
         ecsEngine = new Engine();
 
-        ecsEngine.registerGameSystem(new MovementSystem(ecsEngine));
+        ecsEngine.registerGameSystem(new InputSystem(ecsEngine));
+
+        ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
@@ -305,14 +307,11 @@ public class GameplayScreen extends GameScreen
             game.setScreen(new PauseScreen(game,this));
         }
 
-
         ecsEngine.gameUpdate(dt);
-
-        float physicsRate = ecsEngine.getPhysicsUpdateRate();
-        if(dt > physicsRate * 4) dt = physicsRate * 4;
 
         accumulator += dt;
 
+        float physicsRate = ecsEngine.getPhysicsUpdateRate();
         while(accumulator >= physicsRate)
         {
             ecsEngine.physicsUpdate();
