@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
+import com.ecs.components.InputComponent;
 import com.ecs.components.PositionComponent;
 
 public class MovementSystem extends System
@@ -14,29 +15,31 @@ public class MovementSystem extends System
     {
         super(engine);
 
+        registerComponentType(InputComponent.class);
         registerComponentType(PositionComponent.class);
     }
 
     @Override
     public void updateEntity(Entity entity, float dt)
     {
+        InputComponent i = entity.getComponent(InputComponent.class);
         PositionComponent p = entity.getComponent(PositionComponent.class);
 
         Vector2 speed = new Vector2();
 
-        if(Gdx.input.isKeyPressed(Input.Keys.W))
+        if(Gdx.input.isKeyPressed(i.up))
         {
             speed.y += 1;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.S))
+        if(Gdx.input.isKeyPressed(i.down))
         {
             speed.y -= 1;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.A))
+        if(Gdx.input.isKeyPressed(i.left))
         {
             speed.x -= 1;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.D))
+        if(Gdx.input.isKeyPressed(i.right))
         {
             speed.x += 1;
         }

@@ -12,6 +12,7 @@ import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.components.DrawComponent;
+import com.ecs.components.InputComponent;
 import com.ecs.components.PositionComponent;
 import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.ResizeEvent;
@@ -44,6 +45,8 @@ public class GameplayScreen extends GameScreen
         Entity e = ecsEngine.createEntity();
 
         e.addComponent(new PositionComponent());
+        e.addComponent(new InputComponent());
+
         DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
         d.scale.x = 10;
         d.scale.y = 10;
