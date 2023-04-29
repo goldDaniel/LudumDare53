@@ -3,33 +3,25 @@ package com.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.core.Collisions;
 import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.components.*;
-import com.ecs.events.CameraUpdateEvent;
+import com.ecs.events.CollisionEndEvent;
 import com.ecs.events.ResizeEvent;
-import com.ecs.events.WheelOnGroundEvent;
+import com.ecs.events.CollisionStartEvent;
 import com.ecs.systems.*;
-
-import javax.swing.text.html.HTML;
 
 
 public class GameplayScreen extends GameScreen
@@ -242,7 +234,7 @@ public class GameplayScreen extends GameScreen
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
                         Entity e = (Entity) joints.get(0).other.getUserData();
-                        if (touchingTop(fixA, fixB)) ecsEngine.fireEvent(new WheelOnGroundEvent(e, true));
+                        ecsEngine.fireEvent(new CollisionStartEvent(e, fixA, fixB));
                     }
                 }
             }
@@ -265,7 +257,7 @@ public class GameplayScreen extends GameScreen
                     {
                         Array<JointEdge> joints = fixA.getBody().getJointList();
                         Entity e = (Entity) joints.get(0).other.getUserData();
-                        ecsEngine.fireEvent(new WheelOnGroundEvent(e, false));
+                        ecsEngine.fireEvent(new CollisionEndEvent(e, fixA, fixB));
                     }
                 }
             }
@@ -286,38 +278,7 @@ public class GameplayScreen extends GameScreen
         PhysicsSystem.addContactListener(listener);
     }
 
-    // determines if fixA is touching top of fixB
-    public static boolean touchingTop(Fixture fixA, Fixture fixB)
-    {
-        Rectangle r0 = new Rectangle();
-        r0.width = fixA.getShape().getRadius() * 2;
-        r0.height = fixA.getShape().getRadius() * 2;
-        r0.x = fixA.getBody().getPosition().x - r0.width / 2;
-        r0.y = fixA.getBody().getPosition().y - r0.height / 2;
 
-        Rectangle r1 = new Rectangle();
-        PolygonShape terrainShape = (PolygonShape)fixB.getShape();
-        Vector2 vert = new Vector2();
-        Vector2 min = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        Vector2 max = new Vector2(Integer.MIN_VALUE, Integer.MIN_VALUE);
-        for(int i = 0; i < terrainShape.getVertexCount(); i++)
-        {
-            terrainShape.getVertex(i, vert);
-            if(vert.x > max.x) max.x = vert.x;
-            else if(vert.x < min.x) min.x = vert.x;
-
-            if(vert.y > max.y) max.y = vert.y;
-            else if(vert.y < min.y) min.y = vert.y;
-        }
-        r1.width = max.x - min.x;
-        r1.height = max.y - min.y;
-        r1.x = fixB.getBody().getPosition().x - r1.width / 2;
-        r1.y = fixB.getBody().getPosition().y - r1.height / 2;
-
-        Collisions.CollisionSide side = Collisions.getCollisionSide(r0, r1);
-
-        return side == Collisions.CollisionSide.Top;
-    }
 
     @Override
     public void show()
