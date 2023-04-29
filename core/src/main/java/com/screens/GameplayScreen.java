@@ -160,7 +160,7 @@ public class GameplayScreen extends GameScreen
             shape.setAsBox(width / 2.f, height / 2.f);
 
             fixDef.shape = shape;
-            fixDef.density = 0.1f;
+            fixDef.density = 0.01f;
 
             e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
 
@@ -169,8 +169,8 @@ public class GameplayScreen extends GameScreen
             DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
             d.scale.set(2.77f * 2, 1 * 2);
             d.texture = RenderResources.getTexture("textures/entities/car.png");
-            createWheel(e, width / 2 - width / 6.f, -0.7f);
-            createWheel(e, width / 6.f - width / 2.f, -0.7f);
+            createWheel(e, width / 2 - width / 6.f, 0f);
+            createWheel(e, width / 6.f - width / 2.f, 0f);
 
             TagComponent c = (TagComponent) e.addComponent(new TagComponent());
             c.tag = "player";
@@ -191,7 +191,6 @@ public class GameplayScreen extends GameScreen
         wheelDef.shape = cs;
         wheelDef.density = 0.01f;
         wheelDef.friction = 0.8f;
-        wheelDef.restitution = 0.3f;
 
         Entity wheel = ecsEngine.createEntity();
 

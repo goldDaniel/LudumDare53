@@ -12,6 +12,7 @@ import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
 import com.ecs.components.DrawComponent;
+import com.ecs.components.InAirComponent;
 import com.ecs.components.PhysicsComponent;
 import com.ecs.components.PositionComponent;
 import com.ecs.events.CameraUpdateEvent;
@@ -56,7 +57,7 @@ public class PhysicsSystem extends System
         {
             world.dispose();
         }
-        world = new World(new Vector2(0.f, -20.f), true);
+        world = new World(new Vector2(0.f, -80.f), true);
         listeners = new ContactListenerGroup();
         world.setContactListener(listeners);
 
@@ -85,8 +86,34 @@ public class PhysicsSystem extends System
         if(e.hasComponent(DrawComponent.class))
         {
             DrawComponent d = e.getComponent(DrawComponent.class);
-            d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
-            d.rotation %= 360;
+            if(!e.hasComponent(InAirComponent.class))
+            {
+                float velocityX = phys.body.getLinearVelocity().x;
+                if(Math.abs(velocityX) > 0)
+                {
+                    if(velocityX < 0)
+                    {
+                        d.rotation = 180;
+                    }
+                    else
+                    {
+                        d.rotation = 0;
+                    }
+                }
+            }
+            else
+            {
+                d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
+
+                while (d.rotation < 0)
+                {
+                    d.rotation += 360;
+                }
+                while(d.rotation > 360)
+                {
+                    d.rotation -= 360;
+                }
+            }
         }
     }
 

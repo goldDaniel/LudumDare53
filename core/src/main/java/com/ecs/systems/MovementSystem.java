@@ -35,7 +35,7 @@ public class MovementSystem extends System
 
         if(Gdx.input.isKeyJustPressed(i.up) && !entity.hasComponent(InAirComponent.class))
         {
-            p.body.applyLinearImpulse(new Vector2(0.f, 1.0f), p.body.getPosition(), true);
+            p.body.applyLinearImpulse(new Vector2(0.f, 0.75f), p.body.getPosition(), true);
         }
         if(Gdx.input.isKeyPressed(i.down))
         {
@@ -62,22 +62,23 @@ public class MovementSystem extends System
             p.body.applyLinearImpulse(new Vector2(500.f, 0.f), p.body.getPosition(), true);
         }
 
-        if(angularSpeed != 0)
+        if(Math.abs(angularSpeed) > 0)
         {
-            angularSpeed.nor().scl(0.4f);
-            p.body.applyTorque(angularSpeed.y, true);
+            p.body.applyTorque(angularSpeed * 0.4f, true);
+            float angularVel = p.body.getAngularVelocity();
+            angularVel = MathUtils.clamp(angularVel, -0.5f, 0.5f);
+            p.body.setAngularVelocity(angularVel);
         }
         else
         {
-            float velocity = p.body.getAngularVelocity();
-            velocity *= 0.5;
-            p.body.setAngularVelocity(velocity);
+            float angularVel = p.body.getAngularVelocity();
+            angularVel *= 0.5;
+            p.body.setAngularVelocity(angularVel);
         }
 
         if(speed.len2() > 0)
         {
             float maxXVelocity = 30;
-
 
             Vector2 velocity = p.body.getLinearVelocity();
             // if are are going in a different direction than last frame
@@ -86,14 +87,14 @@ public class MovementSystem extends System
                 p.body.setLinearVelocity(0, velocity.y);
             }
 
-            speed.nor().scl(.50f);
+            speed.nor().scl(1.50f);
             p.body.applyForceToCenter(speed, true);
 
             velocity = p.body.getLinearVelocity();
             velocity.x = MathUtils.clamp(velocity.x, -maxXVelocity, maxXVelocity);
             p.body.setLinearVelocity(velocity);
         }
-        else
+        else  if(!entity.hasComponent(InAirComponent.class))
         {
             Vector2 velocity = p.body.getLinearVelocity();
             velocity.x *= 0.5;
@@ -106,14 +107,5 @@ public class MovementSystem extends System
                 j.other.setAngularVelocity(v);
             }
         }
-        else if(!entity.hasComponent(InAirComponent.class))
-        {
-            Vector2 vel = p.body.getLinearVelocity();
-            vel.x *= 0.95f;
-            p.body.setLinearVelocity(vel);
-        }
-
-        //float clampX = MathUtils.clamp(p.body.getLinearVelocity().x, -15, 15);
-        //p.body.setLinearVelocity(clampX, p.body.getLinearVelocity().y);
     }
 }
