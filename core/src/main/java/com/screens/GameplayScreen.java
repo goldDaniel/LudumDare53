@@ -1,6 +1,8 @@
 package com.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -43,6 +45,11 @@ public class GameplayScreen extends GameScreen
     @Override
     public void update(float dt)
     {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+        {
+            game.setScreen(new PauseScreen(game,this));
+        }
+
         final float timeStep = 1.f/60.f;
 
         accumulator += dt;
