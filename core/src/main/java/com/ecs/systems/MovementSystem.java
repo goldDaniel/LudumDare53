@@ -64,14 +64,8 @@ public class MovementSystem extends System
 
         if(angularSpeed != 0)
         {
-            angularSpeed *= 2.f;
-            p.body.applyTorque(angularSpeed, true);
-        }
-        else
-        {
-            float omega = p.body.getAngularVelocity();
-            omega *= 0.95f;
-            p.body.setAngularVelocity(omega);
+            angularSpeed.nor().scl(0.4f);
+            p.body.applyTorque(angularSpeed.y, true);
         }
         else
         {
@@ -82,11 +76,20 @@ public class MovementSystem extends System
 
         if(speed.len2() > 0)
         {
+            float maxXVelocity = 30;
+
+
+            Vector2 velocity = p.body.getLinearVelocity();
+            // if are are going in a different direction than last frame
+            if(speed.x * velocity.x < 0)
+            {
+                p.body.setLinearVelocity(0, velocity.y);
+            }
+
             speed.nor().scl(.50f);
             p.body.applyForceToCenter(speed, true);
 
-            float maxXVelocity = 30;
-            Vector2 velocity = p.body.getLinearVelocity();
+            velocity = p.body.getLinearVelocity();
             velocity.x = MathUtils.clamp(velocity.x, -maxXVelocity, maxXVelocity);
             p.body.setLinearVelocity(velocity);
         }
