@@ -192,9 +192,9 @@ public class GameplayScreen extends GameScreen
 
         CircleShape cs = new CircleShape();
         cs.setPosition(new Vector2());
-        cs.setRadius(0.45f);
+        cs.setRadius(0.75f);
         wheelDef.shape = cs;
-        wheelDef.density = 0.01f;
+        wheelDef.density = 0.001f;
         wheelDef.friction = 0.8f;
 
         Entity wheel = ecsEngine.createEntity();

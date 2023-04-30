@@ -95,7 +95,7 @@ public class MovementSystem extends System
                     p.body.setLinearVelocity(0, velocity.y);
                 }
 
-                speed.nor().scl(1.50f);
+                speed.nor().scl(5.50f);
 
                 velocity = p.body.getLinearVelocity();
                 if(Math.abs(velocity.x) < maxXVelocity)

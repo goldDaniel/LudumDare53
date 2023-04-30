@@ -17,9 +17,9 @@
 				"id": "Player",
 				"iid": "8c602920-c640-11ed-b356-67b58ee7f841",
 				"layer": "Entities",
-				"x": 192,
-				"y": 1984,
-				"width": 32,
+				"x": 960,
+				"y": 1952,
+				"width": 96,
 				"height": 32,
 				"color": 2555648,
 				"customFields" : {}
