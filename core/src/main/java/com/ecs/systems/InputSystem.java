@@ -33,6 +33,5 @@ public class InputSystem extends System
 
 
         engine.fireEvent(new MovementEvent(entity, state));
-        engine.fireEvent(new BombEvent(entity, state));
     }
 }

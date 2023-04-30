@@ -18,7 +18,7 @@ import com.ecs.events.MovementEvent;
 
 public class BombSystem extends System
 {
-    private ArrayMap<Entity, InputState> actionState = new ArrayMap<>();
+    private final ArrayMap<Entity, InputState> actionState = new ArrayMap<>();
 
     public BombSystem(Engine engine)
     {
@@ -28,7 +28,7 @@ public class BombSystem extends System
         registerComponentType(PhysicsComponent.class);
         registerComponentType(BombComponent.class);
 
-        registerEventType(BombEvent.class);
+        registerEventType(MovementEvent.class);
         registerEventType(LandEvent.class);
     }
 
@@ -91,15 +91,20 @@ public class BombSystem extends System
                 forward.rotateRad(angle);
                 p.body.applyLinearImpulse(forward.scl(0.5f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
             }
+
+            if(goUp || goForward)
+            {
+                engine.fireEvent(new BombEvent(entity));
+            }
         }
     }
 
     @Override
     protected void handleEvent(Event event)
     {
-        if(event instanceof BombEvent)
+        if(event instanceof MovementEvent)
         {
-            InputState state = ((BombEvent) event).input;
+            InputState state = ((MovementEvent) event).input;
 
             if(actionState.containsKey(event.entity))
             {

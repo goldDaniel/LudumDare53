@@ -2,9 +2,9 @@ package com.ecs.events;
 
 import com.ecs.Entity;
 
-public class BombEvent extends Event
+public class StartEvent extends Event
 {
-    public BombEvent(Entity entity)
+    public StartEvent(Entity entity)
     {
         super(entity);
     }
