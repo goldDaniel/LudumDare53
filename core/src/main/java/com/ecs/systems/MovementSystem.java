@@ -89,7 +89,7 @@ public class MovementSystem extends System
                 float maxXVelocity = 30;
 
                 Vector2 velocity = p.body.getLinearVelocity();
-                // if are are going in a different direction than last frame
+                // if we are going in a different direction than last frame
                 if(speed.x * velocity.x < 0)
                 {
                     p.body.setLinearVelocity(0, velocity.y);

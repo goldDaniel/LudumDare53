@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -54,128 +56,146 @@ public class GameplayScreen extends GameScreen
     {
         int tileSize = 32;
 
-        String folder = "levels\\level_test\\simplified\\Level_0\\";
-        String  collisionLayerName = "Collision.csv";
-        String dataName = "data.json";
+        String filepath = "levels\\";
 
         JsonReader reader = new JsonReader();
-        JsonValue root =  reader.parse(Gdx.files.internal(folder + dataName));
+        JsonValue root =  reader.parse(Gdx.files.internal( filepath + "level_test.ldtk"));
 
+        // load map
         {
-            int worldWidthTiles = root.getInt("width") / tileSize;
-            int worldHeightTiles = root.getInt("height") / tileSize;
-
-            int[][] tileValues = new int[worldWidthTiles][worldHeightTiles];
-
-            String csv = Gdx.files.internal(folder + collisionLayerName).readString();
-
-            int readY = 0;
-            int readX = 0;
-            for(String line : csv.split("\n"))
+            for(JsonValue level : root.get("levels"))
             {
-                for(String value : line.split(","))
+                int worldXOffset =  level.getInt("worldX") / tileSize;
+                int worldYOffset =  level.getInt("worldY") / tileSize;
+
+                JsonValue entityLayer = null;
+                JsonValue collisionLayer = null;
+                for(JsonValue layer : level.get("layerInstances"))
                 {
-                    tileValues[readX][readY] = Integer.parseInt(value);
-                    readX++;
+                    if(layer.getString("__identifier").equals("Collision"))
+                    {
+                        collisionLayer = layer;
+                    }
+                    else if(layer.getString("__identifier").equals("Entities"))
+                    {
+                        entityLayer = layer;
+                    }
                 }
 
-                readY++;
-                readX = 0;
-            }
-
-            for(int y = 0; y < worldHeightTiles; y++)
-            {
-                int layerWidth = 1;
-                for(int x = 0; x < worldWidthTiles; x++)
+                for(JsonValue entity : entityLayer.get("entityInstances"))
                 {
-                    if(tileValues[x][y] == 1)
+                    if(entity.getString("__identifier").equals("Player"))
                     {
-                        float width = 1;
-                        float height = 1;
+                        float worldX = entity.get("__grid").getFloat(0) + worldXOffset;
+                        float worldY = -entity.get("__grid").getFloat(1) - worldYOffset;
+
+                        float width = 2.5f;
+                        float height = 0.25f;
 
                         Entity e = ecsEngine.createEntity();
-                        PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
-                        p.position.set(x + 0.5f, 0.5f - y);
-                        p.previousPosition.set(p.position);
-
-                        DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
-                        d.scale.set(width, height);
-                    }
-
-                    if(tileValues[x][y] == 1 && x < worldWidthTiles - 1 && tileValues[x + 1][y] == 1)
-                    {
-                        layerWidth++;
-                    }
-                    else if(tileValues[x][y] == 1 &&
-                          ((x < worldWidthTiles - 1 && tileValues[x + 1][y] == 0) || x == worldWidthTiles - 1))
-                    {
-                        float width = (float)layerWidth;
-                        float height = 1;
-
-                        Entity e = ecsEngine.createEntity();
-                        PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
-                        p.position.set(x - layerWidth / 2.f + 1, 0.5f - y);
+                        PositionComponent p = e.addComponent(new PositionComponent());
+                        p.position.set(worldX, worldY);
                         p.previousPosition.set(p.position);
 
                         BodyDef bodyDef = new BodyDef();
-                        bodyDef.type = BodyDef.BodyType.StaticBody;
+                        bodyDef.type = BodyDef.BodyType.DynamicBody;
                         bodyDef.position.set(p.position);
 
                         FixtureDef fixDef = new FixtureDef();
 
                         PolygonShape shape = new PolygonShape();
-                        shape.setAsBox(width / 2.f,height / 2.f);
+                        shape.setAsBox(width / 2.f, height / 2.f);
 
                         fixDef.shape = shape;
-                        fixDef.friction = 0.9f;
+                        fixDef.density = 0.01f;
 
                         e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
-                        layerWidth = 1;
+                        e.addComponent(new InAirComponent());
+
+                        e.addComponent(new InputComponent());
+                        e.addComponent(new BombComponent());
+
+                        DrawComponent d = e.addComponent(new DrawComponent());
+                        d.scale.set(2.77f * 2, 1 * 2);
+                        d.texture.setRegion(RenderResources.getTexture("textures/entities/car.png"));
+                        createWheel(e, width / 2 - width / 6.f, 0f);
+                        createWheel(e, width / 6.f - width / 2.f, 0f);
+
+                        TagComponent c = e.addComponent(new TagComponent());
+                        c.tag = "player";
+                    }
+                }
+
+
+                String tilesetPath = filepath + collisionLayer.getString("__tilesetRelPath");
+                Texture tileset = RenderResources.getTexture(tilesetPath);
+
+                int[][] tileValues = new int[collisionLayer.getInt("__cWid")][collisionLayer.getInt("__cHei")];
+                for(JsonValue tile :  collisionLayer.get("autoLayerTiles"))
+                {
+                    int x = tile.get("px").getInt(0) / tileSize + worldXOffset;
+                    int y = -tile.get("px").getInt(1) / tileSize - worldYOffset;
+                    tileValues[x][-y] = 1;
+
+                    int textureRegionX = tile.get("src").getInt(0);
+                    int textureRegionY = tile.get("src").getInt(1);
+
+                    Entity tileEntity = ecsEngine.createEntity();
+                    PositionComponent p = tileEntity.addComponent(new PositionComponent());
+                    p.position.set(x, y);
+                    p.previousPosition.set(p.position);
+
+                    DrawComponent d = tileEntity.addComponent(new DrawComponent());
+                    d.texture.setTexture(tileset);
+                    d.texture.setRegionX(textureRegionX);
+                    d.texture.setRegionY(textureRegionY);
+                    d.texture.setRegionWidth(tileSize);
+                    d.texture.setRegionHeight(tileSize);
+                }
+
+                {
+                    int worldWidthTiles = tileValues.length;
+                    int worldHeightTiles = tileValues[0].length;
+
+                    for(int y = 0; y < worldHeightTiles; y++)
+                    {
+                        int layerWidth = 1;
+                        for(int x = 0; x < worldWidthTiles; x++)
+                        {
+                            if(tileValues[x][y] == 1 && x < worldWidthTiles - 1 && tileValues[x + 1][y] == 1)
+                            {
+                                layerWidth++;
+                            }
+                            else if(tileValues[x][y] == 1 &&
+                                ((x < worldWidthTiles - 1 && tileValues[x + 1][y] == 0) || x == worldWidthTiles - 1))
+                            {
+                                float width = (float)layerWidth;
+                                float height = 1;
+
+                                Entity e = ecsEngine.createEntity();
+                                PositionComponent p = e.addComponent(new PositionComponent());
+                                p.position.set(x - layerWidth / 2.f + 0.5f + worldXOffset, -y - worldYOffset);
+                                p.previousPosition.set(p.position);
+
+                                BodyDef bodyDef = new BodyDef();
+                                bodyDef.type = BodyDef.BodyType.StaticBody;
+                                bodyDef.position.set(p.position);
+
+                                FixtureDef fixDef = new FixtureDef();
+
+                                PolygonShape shape = new PolygonShape();
+                                shape.setAsBox(width / 2.f,height / 2.f);
+
+                                fixDef.shape = shape;
+                                fixDef.friction = 0.9f;
+
+                                e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
+                                layerWidth = 1;
+                            }
+                        }
                     }
                 }
             }
-        }
-
-        {
-            JsonValue player = root.get("entities").get("Player").get(0);
-
-            float worldX = player.getFloat("x") / (float)tileSize + 1.0f / 2.f;
-            float worldY = -player.getFloat("y") / (float)tileSize + 1.0f / 2.f;
-
-            float width = 2.5f;
-            float height = 0.25f;
-
-            Entity e = ecsEngine.createEntity();
-            PositionComponent p = (PositionComponent)e.addComponent(new PositionComponent());
-            p.position.set(worldX, worldY);
-            p.previousPosition.set(p.position);
-
-            BodyDef bodyDef = new BodyDef();
-            bodyDef.type = BodyDef.BodyType.DynamicBody;
-            bodyDef.position.set(p.position);
-
-            FixtureDef fixDef = new FixtureDef();
-
-            PolygonShape shape = new PolygonShape();
-            shape.setAsBox(width / 2.f, height / 2.f);
-
-            fixDef.shape = shape;
-            fixDef.density = 0.01f;
-
-            e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
-            e.addComponent(new InAirComponent());
-
-            e.addComponent(new InputComponent());
-            e.addComponent(new BombComponent());
-
-            DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
-            d.scale.set(2.77f * 2, 1 * 2);
-            d.texture = RenderResources.getTexture("textures/entities/car.png");
-            createWheel(e, width / 2 - width / 6.f, 0f);
-            createWheel(e, width / 6.f - width / 2.f, 0f);
-
-            TagComponent c = (TagComponent) e.addComponent(new TagComponent());
-            c.tag = "player";
         }
     }
 
@@ -208,11 +228,11 @@ public class GameplayScreen extends GameScreen
         PhysicsSystem.createJoint(frontWheelJoint);
 
         wheel.addComponent(wheelP);
-        PositionComponent wheelPos = (PositionComponent)wheel.addComponent(new PositionComponent());
+        PositionComponent wheelPos = wheel.addComponent(new PositionComponent());
         wheelPos.position.set(wheelP.body.getPosition());
         wheelPos.previousPosition.set(wheelPos.position);
 
-        DrawComponent wheelDraw = (DrawComponent)wheel.addComponent(new DrawComponent());
+        DrawComponent wheelDraw = wheel.addComponent(new DrawComponent());
         wheelDraw.scale.set(0.5f, 0.5f);
         wheelDraw.currentColor.set(Color.GREEN);
 

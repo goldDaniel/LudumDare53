@@ -79,7 +79,7 @@ public class Entity implements Pool.Poolable
         return result;
     }
 
-    public Component addComponent(Component c)
+    public <T extends Component> T addComponent(T c)
     {
         if(components.containsKey(c.getClass()))
         {
@@ -88,10 +88,10 @@ public class Entity implements Pool.Poolable
 
         components.put(c.getClass(), c);
 
-        return components.get(c.getClass());
+        return (T)components.get(c.getClass());
     }
 
-    public<T extends Component> T getComponent(Class<T> clazz)
+    public <T extends Component> T getComponent(Class<T> clazz)
     {
         return (T)components.get(clazz);
     }

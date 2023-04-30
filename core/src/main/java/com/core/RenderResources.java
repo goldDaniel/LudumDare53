@@ -60,7 +60,7 @@ public class RenderResources
         {
             try
             {
-                return getDefaultTexture("textures/default.png");
+                return getDefaultTexture();
             }
             catch(IOException e)
             {
@@ -71,15 +71,16 @@ public class RenderResources
         return null;
     }
 
-    public static Texture getDefaultTexture(String fileName) throws IOException
+    private static Texture getDefaultTexture() throws IOException
     {
-        FileHandle handle = Gdx.files.internal(fileName);
+        String filename = "textures/default.png";
+        FileHandle handle = Gdx.files.internal(filename);
         if(handle.exists())
         {
             Texture t = new Texture(handle, true);
             t.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-            textures.put(fileName, t);
+            textures.put(filename, t);
             return t;
         }
         else

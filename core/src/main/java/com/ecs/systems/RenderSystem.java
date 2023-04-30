@@ -110,7 +110,7 @@ public class RenderSystem extends System
 
             if(facingLeft)
             {
-                sb.draw(new TextureRegion(d.texture),
+                sb.draw(d.texture,
                     pos.x - width / 2f, pos.y - height / 2f,
                     width / 2, height / 2,
                     width, height,
@@ -119,7 +119,7 @@ public class RenderSystem extends System
             }
             else
             {
-                sb.draw(new TextureRegion(d.texture),
+                sb.draw(d.texture,
                     pos.x - width / 2f, pos.y - height / 2f,
                     width / 2, height / 2,
                      width, height,
