@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.core.AudioResources;
 import com.core.Collisions;
 import com.core.GameConstants;
 import com.core.LevelLoader;
@@ -25,6 +26,7 @@ import com.ecs.components.*;
 import com.ecs.events.CollisionEndEvent;
 import com.ecs.events.ResizeEvent;
 import com.ecs.events.CollisionStartEvent;
+import com.ecs.events.StartEvent;
 import com.ecs.systems.*;
 
 
@@ -42,6 +44,7 @@ public class GameplayScreen extends GameScreen
         ecsEngine = new Engine();
 
         ecsEngine.registerGameSystem(new InputSystem(ecsEngine));
+        ecsEngine.registerGameSystem(new AudioSystem(ecsEngine));
 
         ecsEngine.registerPhysicsSystem(new InAirSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
@@ -52,6 +55,8 @@ public class GameplayScreen extends GameScreen
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
 
         loadLevelIntoECS();
+
+        ecsEngine.fireEvent(new StartEvent(ecsEngine.createEntity()));
     }
 
     private void loadLevelIntoECS()

@@ -12,6 +12,8 @@ public class AudioResources
     private static ArrayMap<String, Sound> soundEffects;
     private static ArrayMap<String, Music> music;
 
+    private static float masterVolume = 1.f;
+
     public static void init()
     {
         if(hasInitialized) throw new IllegalStateException("Audio Resources already initialized");
@@ -49,5 +51,10 @@ public class AudioResources
 
             return s;
         }
+    }
+
+    public static float getMasterVolume()
+    {
+        return masterVolume;
     }
 }

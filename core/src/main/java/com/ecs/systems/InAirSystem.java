@@ -20,6 +20,7 @@ import com.ecs.events.LandEvent;
 public class InAirSystem extends System
 {
     private ArrayMap<Entity, Array<Fixture>> touchingTop = new ArrayMap<>();
+    private ArrayMap<Entity, Boolean> eventFired = new ArrayMap<>();
 
     public InAirSystem(Engine engine)
     {
@@ -39,13 +40,21 @@ public class InAirSystem extends System
             if(touchingTop.get(entity).size >= 2)
             {
                 entity.removeComponent(InAirComponent.class);
-                engine.fireEvent(new LandEvent(entity));
+                if(!eventFired.containsKey(entity))
+                {
+                    engine.fireEvent(new LandEvent(entity));
+                    eventFired.put(entity, Boolean.TRUE);
+                }
             }
             else
             {
                 if(!entity.hasComponent(InAirComponent.class))
                 {
                     entity.addComponent(new InAirComponent());
+                    if(eventFired.containsKey(entity))
+                    {
+                        eventFired.removeKey(entity);
+                    }
                 }
             }
         }
