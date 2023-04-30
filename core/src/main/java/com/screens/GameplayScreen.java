@@ -133,9 +133,12 @@ public class GameplayScreen extends GameScreen
                 int[][] tileValues = new int[collisionLayer.getInt("__cWid")][collisionLayer.getInt("__cHei")];
                 for(JsonValue tile :  collisionLayer.get("autoLayerTiles"))
                 {
-                    int x = tile.get("px").getInt(0) / tileSize + worldXOffset;
-                    int y = -tile.get("px").getInt(1) / tileSize - worldYOffset;
-                    tileValues[x][-y] = 1;
+                    int xIndex = tile.get("px").getInt(0) / tileSize;
+                    int yIndex = tile.get("px").getInt(1) / tileSize;
+
+                    int x = xIndex + worldXOffset;
+                    int y = -yIndex - worldYOffset;
+                    tileValues[xIndex][yIndex] = 1;
 
                     int textureRegionX = tile.get("src").getInt(0);
                     int textureRegionY = tile.get("src").getInt(1);
