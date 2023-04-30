@@ -1,0 +1,24 @@
+{
+	"identifier": "Level_1",
+	"uniqueIdentifer": "2b7a9b80-c640-11ed-9b56-2f3a7407c2c5",
+	"x": 9408,
+	"y": 1824,
+	"width": 1728,
+	"height": 416,
+	"bgColor": "#696A79",
+	"neighbourLevels": [
+		{
+			"levelIid": "5cd13810-c640-11ed-8747-fb195d7ca24c",
+			"dir": "w"
+		},
+		{
+			"levelIid": "67312ae0-c640-11ed-9b56-21ad24a03d3d",
+			"dir": "s"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Collision.png"
+	],
+	"entities" : {}
+}

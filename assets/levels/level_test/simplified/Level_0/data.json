@@ -3,10 +3,19 @@
 	"uniqueIdentifer": "5cd13810-c640-11ed-8747-fb195d7ca24c",
 	"x": 0,
 	"y": 0,
-	"width": 5664,
-	"height": 2240,
+	"width": 9408,
+	"height": 4672,
 	"bgColor": "#696A79",
-	"neighbourLevels": [],
+	"neighbourLevels": [
+		{
+			"levelIid": "2b7a9b80-c640-11ed-9b56-2f3a7407c2c5",
+			"dir": "e"
+		},
+		{
+			"levelIid": "67312ae0-c640-11ed-9b56-21ad24a03d3d",
+			"dir": "e"
+		}
+	],
 	"customFields" : {},
 	"layers": [
 		"Collision.png"
@@ -17,8 +26,8 @@
 				"id": "Player",
 				"iid": "8c602920-c640-11ed-b356-67b58ee7f841",
 				"layer": "Entities",
-				"x": 960,
-				"y": 1952,
+				"x": 192,
+				"y": 2144,
 				"width": 96,
 				"height": 32,
 				"color": 2555648,
