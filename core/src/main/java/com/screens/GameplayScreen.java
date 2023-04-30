@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
@@ -23,10 +24,7 @@ import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.components.*;
-import com.ecs.events.CollisionEndEvent;
-import com.ecs.events.ResizeEvent;
-import com.ecs.events.CollisionStartEvent;
-import com.ecs.events.StartEvent;
+import com.ecs.events.*;
 import com.ecs.systems.*;
 
 
@@ -53,10 +51,16 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
+        ecsEngine.registerRenderSystem(new GameOverSystem(ecsEngine, () -> transitionTo(new MainMenuScreen(game))));;
 
         loadLevelIntoECS();
 
-        ecsEngine.fireEvent(new StartEvent(ecsEngine.createEntity()));
+        ecsEngine.fireEvent(new StartEvent(null));
+    }
+
+    public void doEvent(Event event)
+    {
+        ecsEngine.fireEvent(event);
     }
 
     private void loadLevelIntoECS()
@@ -77,17 +81,24 @@ public class GameplayScreen extends GameScreen
         super.hide();
     }
 
+    Label timer;
     @Override
     public void buildUI(Table table, Skin skin)
     {
-
+        table.top().left();
+        timer = new Label("Delivery Distance: " + Math.max((TIME_LIMIT - elapsedTime) * PIZZA_GUY_SPEED, 0.f), skin, "splash_continue");
+        table.add(timer);
     }
 
+    private static final float TIME_LIMIT = 10;
+    private static final float PIZZA_GUY_SPEED = 50;
+    private static final float KPH_TO_MPS = 3.6f;
     @Override
     public void update(float dt)
     {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
+            ecsEngine.fireEvent(new PauseEvent(null));
             game.setScreen(new PauseScreen(game,this));
         }
 
@@ -103,8 +114,28 @@ public class GameplayScreen extends GameScreen
         }
 
         elapsedTime += dt;
+        int distance = Math.max((int)((TIME_LIMIT - elapsedTime) * PIZZA_GUY_SPEED * KPH_TO_MPS), 0);
+        String unit = "";
+        if(distance > 1000)
+        {
+            distance /= 1000;
+            unit += "km";
+        }
+        else
+        {
+            unit += "m";
+        }
+
+        timer.setText(String.format("Delivery Distance: %d%s", distance, unit));
 
         renderAlpha = accumulator / physicsRate;
+
+        if(elapsedTime >= TIME_LIMIT)
+        {
+            Entity e = ecsEngine.createEntity();
+            e.addComponent(new GameOverComponent());
+            ecsEngine.fireEvent(new PauseEvent(null));
+        }
     }
 
     @Override

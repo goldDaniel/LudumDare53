@@ -5,13 +5,11 @@ import com.badlogic.gdx.utils.Queue;
 import com.core.AudioResources;
 import com.ecs.Engine;
 import com.ecs.System;
-import com.ecs.events.BombEvent;
-import com.ecs.events.Event;
-import com.ecs.events.LandEvent;
-import com.ecs.events.StartEvent;
+import com.ecs.events.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AudioSystem extends System
 {
@@ -41,6 +39,7 @@ public class AudioSystem extends System
         registerEventType(StartEvent.class);
         registerEventType(BombEvent.class);
         registerEventType(LandEvent.class);
+        registerEventType(PauseEvent.class);
     }
 
     @Override
@@ -48,15 +47,33 @@ public class AudioSystem extends System
     {
         if(event instanceof StartEvent)
         {
-            sounds.addLast(new Audio("audio\\sfx\\idle.wav", 0.1f * AudioResources.getMasterVolume(), true));
+            if(looping.size() > 0)
+            {
+                for(Map.Entry<String, Audio> entry : looping.entrySet())
+                {
+                    Audio a = entry.getValue();
+                    a.sound.loop(a.volume);
+                }
+            }
+            else
+            {
+                sounds.addLast(new Audio("audio\\sfx\\idle.wav", 0.1f * AudioResources.getMasterVolume(), true));
+            }
         }
         else if(event instanceof BombEvent)
         {
             sounds.addLast(new Audio("audio\\sfx\\explosion.ogg", 0.2f * AudioResources.getMasterVolume(), false));
         }
-        else if (event instanceof LandEvent)
+        else if(event instanceof LandEvent)
         {
             sounds.addLast(new Audio("audio\\sfx\\land.wav", 0.1f * AudioResources.getMasterVolume(), false));
+        }
+        else if(event instanceof PauseEvent)
+        {
+            for(Map.Entry<String, Audio> entry : looping.entrySet())
+            {
+                entry.getValue().sound.stop();
+            }
         }
     }
 

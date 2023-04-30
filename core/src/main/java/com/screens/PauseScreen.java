@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.core.RenderResources;
+import com.ecs.events.StartEvent;
 
 public class PauseScreen extends GameScreen
 {
@@ -38,6 +39,7 @@ public class PauseScreen extends GameScreen
             public void changed(ChangeEvent event, Actor actor)
             {
                 game.setScreen(gameScreen);
+                ((GameplayScreen)gameScreen).doEvent(new StartEvent(null));
             }
         });
         table.add(resumeButton).padTop(100).row();
@@ -65,6 +67,7 @@ public class PauseScreen extends GameScreen
     {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
+            ((GameplayScreen)gameScreen).doEvent(new StartEvent(null));
             game.setScreen(gameScreen);
         }
     }
