@@ -29,7 +29,7 @@ public class InputSystem extends System
         state.up = Gdx.input.isKeyJustPressed(i.up);
         state.down = Gdx.input.isKeyPressed(i.down);
 
-        state.action = Gdx.input.isKeyPressed(i.action);
+        state.action = Gdx.input.isKeyJustPressed(i.action);
 
 
         engine.fireEvent(new MovementEvent(entity, state));

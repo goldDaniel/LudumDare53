@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.core.ContactListenerGroup;
+import com.core.GameConstants;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -22,7 +23,7 @@ public class PhysicsSystem extends System
     private static ContactListenerGroup listeners;
 
     private static final Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
-    Viewport viewport = new ExtendViewport(16,16);
+    Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
 
 
     public static PhysicsComponent createComponentFromDefinition(Entity entity, BodyDef def, FixtureDef fixDef)
@@ -54,7 +55,7 @@ public class PhysicsSystem extends System
         {
             world.dispose();
         }
-        world = new World(new Vector2(0.f, -20.f), true);
+        world = new World(new Vector2(0.f, -80.f), true);
         listeners = new ContactListenerGroup();
         world.setContactListener(listeners);
 
@@ -120,7 +121,7 @@ public class PhysicsSystem extends System
     protected void postUpdate()
     {
         super.postUpdate();
-        //debugRenderer.render(world, viewport.getCamera().combined);
+        debugRenderer.render(world, viewport.getCamera().combined);
     }
 
     @Override

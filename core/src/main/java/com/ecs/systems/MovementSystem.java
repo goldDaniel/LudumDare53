@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Queue;
+import com.core.GameConstants;
 import com.core.InputState;
 import com.ecs.Engine;
 import com.ecs.Entity;
@@ -72,9 +73,9 @@ public class MovementSystem extends System
 
             if(Math.abs(angularSpeed) > 0)
             {
-                p.body.applyTorque(angularSpeed * 0.4f, true);
+                p.body.applyTorque(angularSpeed * 0.03f * GameConstants.WORLD_SCALE, true);
                 float angularVel = p.body.getAngularVelocity();
-                angularVel = MathUtils.clamp(angularVel, -0.5f, 0.5f);
+                angularVel = MathUtils.clamp(angularVel, -0.5f * GameConstants.WORLD_SCALE, 0.5f * GameConstants.WORLD_SCALE);
                 p.body.setAngularVelocity(angularVel);
             }
             else
@@ -95,9 +96,12 @@ public class MovementSystem extends System
                     p.body.setLinearVelocity(0, velocity.y);
                 }
 
-                speed.nor().scl(2500.50f);
+                speed.nor().scl(0.2f);
 
-                p.body.setLinearVelocity(speed);
+                if(velocity.x < maxXVelocity)
+                {
+                    p.body.applyForceToCenter(speed, true);
+                }
             }
             else  if(!entity.hasComponent(InAirComponent.class))
             {

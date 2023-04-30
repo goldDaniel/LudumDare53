@@ -2,6 +2,7 @@ package com.ecs.systems;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.core.GameConstants;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -16,7 +17,7 @@ public class CameraUpdateSystem extends System
     public CameraUpdateSystem(Engine engine)
     {
         super(engine);
-        cam = new OrthographicCamera(16,16);
+        cam = new OrthographicCamera(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
 
         registerComponentType(TagComponent.class);
         registerComponentType(PositionComponent.class);

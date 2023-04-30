@@ -4,5 +4,6 @@ import com.ecs.Component;
 
 public class BombComponent extends Component
 {
-    public boolean bombAvailable = true;
+    public int maxBombs = 1;
+    public int bombsAvailable = 1;
 }

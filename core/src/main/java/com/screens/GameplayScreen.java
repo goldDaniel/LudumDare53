@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.core.Collisions;
+import com.core.GameConstants;
 import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
@@ -41,10 +42,10 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerGameSystem(new InputSystem(ecsEngine));
 
-        ecsEngine.registerPhysicsSystem(new BombSystem(ecsEngine));
-        ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
-        ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new InAirSystem(ecsEngine));
+        ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
+        ecsEngine.registerPhysicsSystem(new BombSystem(ecsEngine));
+        ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
@@ -54,7 +55,7 @@ public class GameplayScreen extends GameScreen
 
     private void loadLevelIntoECS()
     {
-        float tempScaleAdjuster = 1.0f/4.0f;
+        float tempScaleAdjuster = GameConstants.WORLD_SCALE;
 
         int tileSize = 32;
 
@@ -111,13 +112,15 @@ public class GameplayScreen extends GameScreen
                         shape.setAsBox(width / 2.f, height / 2.f);
 
                         fixDef.shape = shape;
-                        fixDef.density = 0.01f;
+                        fixDef.density = 0.01f / GameConstants.WORLD_SCALE;
 
                         e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
                         e.addComponent(new InAirComponent());
 
                         e.addComponent(new InputComponent());
-                        e.addComponent(new BombComponent());
+                        BombComponent b = e.addComponent(new BombComponent());
+                        b.maxBombs = 1;
+                        b.bombsAvailable = b.maxBombs;
 
                         DrawComponent d = e.addComponent(new DrawComponent());
                         d.scale.set(2.77f * 2 * tempScaleAdjuster, 1 * 2 * tempScaleAdjuster);
@@ -184,7 +187,7 @@ public class GameplayScreen extends GameScreen
 
                                 Entity e = ecsEngine.createEntity();
                                 PositionComponent p = e.addComponent(new PositionComponent());
-                                p.position.set(posX - layerWidth / 2.f + 0.5f + worldXOffset, -posY - worldYOffset);
+                                p.position.set(posX - layerWidth / 2.f + tempScaleAdjuster / 2 + worldXOffset, -posY - worldYOffset);
                                 p.previousPosition.set(p.position);
 
                                 BodyDef bodyDef = new BodyDef();
@@ -224,7 +227,7 @@ public class GameplayScreen extends GameScreen
         cs.setPosition(new Vector2());
         cs.setRadius(0.75f * tempScaleAdjuster);
         wheelDef.shape = cs;
-        wheelDef.density = 0.001f;
+        wheelDef.density = 0.001f / GameConstants.WORLD_SCALE;
         wheelDef.friction = 0.8f;
 
         Entity wheel = ecsEngine.createEntity();

@@ -2,6 +2,7 @@ package com.ecs.systems;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.core.GameConstants;
 import com.core.InputState;
 import com.ecs.Engine;
 import com.ecs.Entity;
@@ -42,12 +43,12 @@ public class BombSystem extends System
             InputState i = actionState.get(entity);
             actionState.removeKey(entity);
 
-            boolean goUp = i.up && b.bombAvailable;
-            boolean goForward = i.action && b.bombAvailable;
+            boolean goUp = i.up && b.bombsAvailable > 0;
+            boolean goForward = i.action && b.bombsAvailable > 0;
 
             if((goUp || goForward) && entity.hasComponent(InAirComponent.class))
             {
-                b.bombAvailable = false;
+                b.bombsAvailable--;
             }
 
             if(goUp)
@@ -73,10 +74,9 @@ public class BombSystem extends System
                     up.rotateRad(-(float)Math.PI / 2.f);
                 }
 
-                p.body.applyLinearImpulse(up.scl(0.75f), p.body.getPosition(), true);
+                p.body.applyLinearImpulse(up.scl(0.3f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
             }
-
-            if(goForward)
+            else if(goForward)
             {
                 Vector2 forward = new Vector2(1, 0);
                 float angle = p.body.getAngle();
@@ -89,7 +89,7 @@ public class BombSystem extends System
                     angle += 2 * Math.PI;
                 }
                 forward.rotateRad(angle);
-                p.body.applyLinearImpulse(forward.scl(100), p.body.getPosition(), true);
+                p.body.applyLinearImpulse(forward.scl(0.5f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
             }
         }
     }
@@ -119,7 +119,8 @@ public class BombSystem extends System
 
             if(e.hasComponent(BombComponent.class))
             {
-               e.getComponent(BombComponent.class).bombAvailable = true;
+                BombComponent b = e.getComponent(BombComponent.class);
+                b.bombsAvailable = b.maxBombs;
             }
         }
     }

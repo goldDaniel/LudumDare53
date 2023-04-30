@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.core.GameConstants;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -34,7 +35,7 @@ public class RenderSystem extends System
 
     private final Array<Renderable> renderables = new Array<>();
 
-    private Viewport viewport = new ExtendViewport(16,16);
+    private Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
 
     private final SpriteBatch sb;
 
