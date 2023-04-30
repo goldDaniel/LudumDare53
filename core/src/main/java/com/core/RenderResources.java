@@ -48,7 +48,7 @@ public class RenderResources
         }
 
         FileHandle handle = Gdx.files.internal(fileName);
-        if(handle.file().exists())
+        if(handle.exists())
         {
             Texture t = new Texture(handle, true);
             t.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -74,7 +74,7 @@ public class RenderResources
     public static Texture getDefaultTexture(String fileName) throws IOException
     {
         FileHandle handle = Gdx.files.internal(fileName);
-        if(handle.file().exists())
+        if(handle.exists())
         {
             Texture t = new Texture(handle, true);
             t.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);

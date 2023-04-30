@@ -14,7 +14,7 @@ public class AudioResources
 
     public static void init()
     {
-        if(hasInitialized) throw new IllegalStateException("Render Resources already initialized");
+        if(hasInitialized) throw new IllegalStateException("Audio Resources already initialized");
         hasInitialized = true;
 
         soundEffects = new ArrayMap<>();

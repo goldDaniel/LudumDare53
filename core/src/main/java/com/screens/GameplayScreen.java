@@ -162,7 +162,7 @@ public class GameplayScreen extends GameScreen
             fixDef.density = 0.01f;
 
             e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
-            //e.addComponent(new InAirComponent());
+            e.addComponent(new InAirComponent());
 
             e.addComponent(new InputComponent());
 
