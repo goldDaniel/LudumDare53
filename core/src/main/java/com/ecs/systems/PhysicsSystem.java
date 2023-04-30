@@ -22,7 +22,7 @@ public class PhysicsSystem extends System
     private static ContactListenerGroup listeners;
 
     private static final Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
-    Viewport viewport = new ExtendViewport(64,64);
+    Viewport viewport = new ExtendViewport(16,16);
 
 
     public static PhysicsComponent createComponentFromDefinition(Entity entity, BodyDef def, FixtureDef fixDef)
@@ -54,7 +54,7 @@ public class PhysicsSystem extends System
         {
             world.dispose();
         }
-        world = new World(new Vector2(0.f, -80.f), true);
+        world = new World(new Vector2(0.f, -20.f), true);
         listeners = new ContactListenerGroup();
         world.setContactListener(listeners);
 
@@ -69,7 +69,7 @@ public class PhysicsSystem extends System
     protected void preUpdate()
     {
         super.preUpdate();
-        world.step(engine.getPhysicsUpdateRate(), 10, 5);
+        world.step(engine.getPhysicsUpdateRate(), 6, 2);
     }
 
     protected void updateEntity(Entity e, float dt)
@@ -120,7 +120,7 @@ public class PhysicsSystem extends System
     protected void postUpdate()
     {
         super.postUpdate();
-        debugRenderer.render(world, viewport.getCamera().combined);
+        //debugRenderer.render(world, viewport.getCamera().combined);
     }
 
     @Override

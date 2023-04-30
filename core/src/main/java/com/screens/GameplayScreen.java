@@ -54,6 +54,8 @@ public class GameplayScreen extends GameScreen
 
     private void loadLevelIntoECS()
     {
+        float tempScaleAdjuster = 1.0f/4.0f;
+
         int tileSize = 32;
 
         String filepath = "levels\\";
@@ -65,8 +67,8 @@ public class GameplayScreen extends GameScreen
         {
             for(JsonValue level : root.get("levels"))
             {
-                int worldXOffset =  level.getInt("worldX") / tileSize;
-                int worldYOffset =  level.getInt("worldY") / tileSize;
+                float worldXOffset =  level.getInt("worldX") / tileSize * tempScaleAdjuster;
+                float worldYOffset =  level.getInt("worldY") / tileSize * tempScaleAdjuster;
 
                 JsonValue entityLayer = null;
                 JsonValue collisionLayer = null;
@@ -87,10 +89,12 @@ public class GameplayScreen extends GameScreen
                     if(entity.getString("__identifier").equals("Player"))
                     {
                         float worldX = entity.get("__grid").getFloat(0) + worldXOffset;
+                        worldX *= tempScaleAdjuster;
                         float worldY = -entity.get("__grid").getFloat(1) - worldYOffset;
+                        worldY *= tempScaleAdjuster;
 
-                        float width = 2.5f;
-                        float height = 0.25f;
+                        float width = 2.5f * tempScaleAdjuster;
+                        float height = 0.25f * tempScaleAdjuster;
 
                         Entity e = ecsEngine.createEntity();
                         PositionComponent p = e.addComponent(new PositionComponent());
@@ -116,10 +120,10 @@ public class GameplayScreen extends GameScreen
                         e.addComponent(new BombComponent());
 
                         DrawComponent d = e.addComponent(new DrawComponent());
-                        d.scale.set(2.77f * 2, 1 * 2);
+                        d.scale.set(2.77f * 2 * tempScaleAdjuster, 1 * 2 * tempScaleAdjuster);
                         d.texture.setRegion(RenderResources.getTexture("textures/entities/car.png"));
-                        createWheel(e, width / 2 - width / 6.f, 0f);
-                        createWheel(e, width / 6.f - width / 2.f, 0f);
+                        createWheel(e, width / 2 - width / 6.f, 0f, tempScaleAdjuster);
+                        createWheel(e, width / 6.f - width / 2.f, 0f, tempScaleAdjuster);
 
                         TagComponent c = e.addComponent(new TagComponent());
                         c.tag = "player";
@@ -136,8 +140,8 @@ public class GameplayScreen extends GameScreen
                     int xIndex = tile.get("px").getInt(0) / tileSize;
                     int yIndex = tile.get("px").getInt(1) / tileSize;
 
-                    int x = xIndex + worldXOffset;
-                    int y = -yIndex - worldYOffset;
+                    float x = (xIndex * tempScaleAdjuster + worldXOffset) ;
+                    float y = (-yIndex * tempScaleAdjuster - worldYOffset);
                     tileValues[xIndex][yIndex] = 1;
 
                     int textureRegionX = tile.get("src").getInt(0);
@@ -149,6 +153,7 @@ public class GameplayScreen extends GameScreen
                     p.previousPosition.set(p.position);
 
                     DrawComponent d = tileEntity.addComponent(new DrawComponent());
+                    d.scale.set(tempScaleAdjuster,tempScaleAdjuster);
                     d.texture.setTexture(tileset);
                     d.texture.setRegionX(textureRegionX);
                     d.texture.setRegionY(textureRegionY);
@@ -162,22 +167,24 @@ public class GameplayScreen extends GameScreen
 
                     for(int y = 0; y < worldHeightTiles; y++)
                     {
-                        int layerWidth = 1;
+                        float layerWidth = tempScaleAdjuster;
                         for(int x = 0; x < worldWidthTiles; x++)
                         {
                             if(tileValues[x][y] == 1 && x < worldWidthTiles - 1 && tileValues[x + 1][y] == 1)
                             {
-                                layerWidth++;
+                                layerWidth += 1 * tempScaleAdjuster;
                             }
                             else if(tileValues[x][y] == 1 &&
                                 ((x < worldWidthTiles - 1 && tileValues[x + 1][y] == 0) || x == worldWidthTiles - 1))
                             {
-                                float width = (float)layerWidth;
-                                float height = 1;
+                                float posX = x * tempScaleAdjuster;
+                                float posY = y * tempScaleAdjuster;
+
+                                float height = tempScaleAdjuster;
 
                                 Entity e = ecsEngine.createEntity();
                                 PositionComponent p = e.addComponent(new PositionComponent());
-                                p.position.set(x - layerWidth / 2.f + 0.5f + worldXOffset, -y - worldYOffset);
+                                p.position.set(posX - layerWidth / 2.f + 0.5f + worldXOffset, -posY - worldYOffset);
                                 p.previousPosition.set(p.position);
 
                                 BodyDef bodyDef = new BodyDef();
@@ -187,13 +194,13 @@ public class GameplayScreen extends GameScreen
                                 FixtureDef fixDef = new FixtureDef();
 
                                 PolygonShape shape = new PolygonShape();
-                                shape.setAsBox(width / 2.f,height / 2.f);
+                                shape.setAsBox(layerWidth / 2.f,height / 2.f);
 
                                 fixDef.shape = shape;
                                 fixDef.friction = 0.9f;
 
                                 e.addComponent(PhysicsSystem.createComponentFromDefinition(e, bodyDef, fixDef));
-                                layerWidth = 1;
+                                layerWidth = tempScaleAdjuster;
                             }
                         }
                     }
@@ -202,7 +209,7 @@ public class GameplayScreen extends GameScreen
         }
     }
 
-    private void createWheel(Entity e, float offsetX, float offsetY)
+    private void createWheel(Entity e, float offsetX, float offsetY, float tempScaleAdjuster)
     {
         PositionComponent entityPos = e.getComponent(PositionComponent.class);
 
@@ -215,7 +222,7 @@ public class GameplayScreen extends GameScreen
 
         CircleShape cs = new CircleShape();
         cs.setPosition(new Vector2());
-        cs.setRadius(0.75f);
+        cs.setRadius(0.75f * tempScaleAdjuster);
         wheelDef.shape = cs;
         wheelDef.density = 0.001f;
         wheelDef.friction = 0.8f;
@@ -234,10 +241,6 @@ public class GameplayScreen extends GameScreen
         PositionComponent wheelPos = wheel.addComponent(new PositionComponent());
         wheelPos.position.set(wheelP.body.getPosition());
         wheelPos.previousPosition.set(wheelPos.position);
-
-        DrawComponent wheelDraw = wheel.addComponent(new DrawComponent());
-        wheelDraw.scale.set(0.5f, 0.5f);
-        wheelDraw.currentColor.set(Color.GREEN);
 
         ContactListener listener = new ContactListener()
         {

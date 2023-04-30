@@ -16,7 +16,7 @@ public class CameraUpdateSystem extends System
     public CameraUpdateSystem(Engine engine)
     {
         super(engine);
-        cam = new OrthographicCamera(64,64);
+        cam = new OrthographicCamera(16,16);
 
         registerComponentType(TagComponent.class);
         registerComponentType(PositionComponent.class);
