@@ -15,6 +15,7 @@ import com.ecs.components.InputComponent;
 import com.ecs.events.CollisionEndEvent;
 import com.ecs.events.CollisionStartEvent;
 import com.ecs.events.Event;
+import com.ecs.events.LandEvent;
 
 public class InAirSystem extends System
 {
@@ -38,6 +39,7 @@ public class InAirSystem extends System
             if(touchingTop.get(entity).size >= 2)
             {
                 entity.removeComponent(InAirComponent.class);
+                engine.fireEvent(new LandEvent(entity));
             }
             else
             {

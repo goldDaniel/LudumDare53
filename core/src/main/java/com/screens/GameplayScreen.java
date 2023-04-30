@@ -39,6 +39,7 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerGameSystem(new InputSystem(ecsEngine));
 
+        ecsEngine.registerPhysicsSystem(new BombSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new InAirSystem(ecsEngine));
@@ -165,6 +166,7 @@ public class GameplayScreen extends GameScreen
             e.addComponent(new InAirComponent());
 
             e.addComponent(new InputComponent());
+            e.addComponent(new BombComponent());
 
             DrawComponent d = (DrawComponent)e.addComponent(new DrawComponent());
             d.scale.set(2.77f * 2, 1 * 2);

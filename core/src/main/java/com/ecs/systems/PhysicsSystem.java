@@ -101,15 +101,15 @@ public class PhysicsSystem extends System
             else
             {
                 d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
+            }
 
-                while (d.rotation < 0)
-                {
-                    d.rotation += 360;
-                }
-                while(d.rotation > 360)
-                {
-                    d.rotation -= 360;
-                }
+            while (d.rotation < 0)
+            {
+                d.rotation += 360;
+            }
+            while(d.rotation > 360)
+            {
+                d.rotation -= 360;
             }
 
             phys.body.setTransform(phys.body.getPosition(), MathUtils.degreesToRadians * d.rotation);

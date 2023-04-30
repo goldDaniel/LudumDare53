@@ -42,10 +42,6 @@ public class MovementSystem extends System
             Vector2 speed = new Vector2();
             float angularSpeed = 0;
 
-            if(i.up && !entity.hasComponent(InAirComponent.class))
-            {
-                p.body.applyLinearImpulse(new Vector2(0.f, 0.75f), p.body.getPosition(), true);
-            }
             if(i.down)
             {
                 speed.y -= 1;
@@ -65,10 +61,6 @@ public class MovementSystem extends System
             if(i.ccwRotate)
             {
                 angularSpeed -= 1;
-            }
-            if(i.action)
-            {
-                p.body.applyLinearImpulse(new Vector2(500.f, 0.f), p.body.getPosition(), true);
             }
 
             if(Math.abs(angularSpeed) > 0)
@@ -97,11 +89,12 @@ public class MovementSystem extends System
                 }
 
                 speed.nor().scl(1.50f);
-                p.body.applyForceToCenter(speed, true);
 
                 velocity = p.body.getLinearVelocity();
-                velocity.x = MathUtils.clamp(velocity.x, -maxXVelocity, maxXVelocity);
-                p.body.setLinearVelocity(velocity);
+                if(Math.abs(velocity.x) < maxXVelocity)
+                {
+                    p.body.applyForceToCenter(speed, true);
+                }
             }
             else  if(!entity.hasComponent(InAirComponent.class))
             {

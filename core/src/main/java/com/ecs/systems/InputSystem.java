@@ -6,6 +6,7 @@ import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
 import com.ecs.components.InputComponent;
+import com.ecs.events.BombEvent;
 import com.ecs.events.MovementEvent;
 
 public class InputSystem extends System
@@ -35,5 +36,6 @@ public class InputSystem extends System
 
 
         engine.fireEvent(new MovementEvent(entity, state));
+        engine.fireEvent(new BombEvent(entity, state));
     }
 }
