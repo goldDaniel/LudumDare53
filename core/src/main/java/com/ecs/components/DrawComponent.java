@@ -16,5 +16,6 @@ public class DrawComponent extends Component
 
     public float rotation = 0;
 
-    public boolean facingLeft = false;
+    public boolean flipX = false;
+    public boolean flipY = false;
 }

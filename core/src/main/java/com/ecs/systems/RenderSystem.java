@@ -102,31 +102,15 @@ public class RenderSystem extends System
             float width = d.scale.x;
             float height = d.scale.y;
 
-            boolean facingLeft = d.facingLeft;
+            float scaleX = d.flipX ? -1 : 1;
+            float scaleY = d.flipY ? -1 : 1;
 
-            if(d.rotation > 90 && d.rotation < 270)
-            {
-                facingLeft = !facingLeft;
-            }
-
-            if(facingLeft)
-            {
-                sb.draw(d.texture,
-                    pos.x - width / 2f, pos.y - height / 2f,
-                    width / 2, height / 2,
-                    width, height,
-                    1f, -1f,
-                    d.rotation);
-            }
-            else
-            {
-                sb.draw(d.texture,
-                    pos.x - width / 2f, pos.y - height / 2f,
-                    width / 2, height / 2,
-                     width, height,
-                    1f, 1f,
-                    d.rotation);
-            }
+            sb.draw(d.texture,
+                pos.x - width / 2f, pos.y - height / 2f,
+                width / 2, height / 2,
+                width, height,
+                scaleX, scaleY,
+                d.rotation);
         }
 
         sb.end();

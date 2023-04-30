@@ -70,8 +70,54 @@ public class PhysicsSystem extends System
     protected void preUpdate()
     {
         super.preUpdate();
-        world.step(engine.getPhysicsUpdateRate(), 6, 2);
+        world.step(engine.getPhysicsUpdateRate(), 12, 12);
     }
+
+    private static void HandlePlayerRenderRotation(Entity player)
+    {
+        PhysicsComponent phys = player.getComponent(PhysicsComponent.class);
+        DrawComponent d = player.getComponent(DrawComponent.class);
+
+        if(!player.hasComponent(InAirComponent.class))
+        {
+            float velocityX = phys.body.getLinearVelocity().x;
+            if (Math.abs(velocityX) > 0)
+            {
+                if (velocityX < 0)
+                {
+                    d.rotation = 180;
+                }
+                else
+                {
+                    d.rotation = 0;
+                }
+            }
+        }
+        else
+        {
+            d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
+        }
+
+        while (d.rotation < 0)
+        {
+            d.rotation += 360;
+        }
+        while(d.rotation > 360)
+        {
+            d.rotation -= 360;
+        }
+
+        if(d.rotation > 90 && d.rotation < 270)
+        {
+            d.flipY = true;
+        }
+        else
+        {
+            d.flipY = false;
+        }
+        phys.body.setTransform(phys.body.getPosition(), MathUtils.degreesToRadians * d.rotation);
+    }
+
 
     protected void updateEntity(Entity e, float dt)
     {
@@ -84,36 +130,13 @@ public class PhysicsSystem extends System
         if(e.hasComponent(DrawComponent.class))
         {
             DrawComponent d = e.getComponent(DrawComponent.class);
-            if(!e.hasComponent(InAirComponent.class))
-            {
-                float velocityX = phys.body.getLinearVelocity().x;
-                if (Math.abs(velocityX) > 0)
-                {
-                    if (velocityX < 0)
-                    {
-                        d.rotation = 180;
-                    }
-                    else
-                    {
-                        d.rotation = 0;
-                    }
-                }
-            }
-            else
-            {
-                d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
-            }
+            d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
+        }
 
-            while (d.rotation < 0)
-            {
-                d.rotation += 360;
-            }
-            while(d.rotation > 360)
-            {
-                d.rotation -= 360;
-            }
-
-            phys.body.setTransform(phys.body.getPosition(), MathUtils.degreesToRadians * d.rotation);
+        // only player has input component. Could also check tag?
+        if(e.hasComponent(InputComponent.class))
+        {
+            HandlePlayerRenderRotation(e);
         }
     }
 
