@@ -13,6 +13,7 @@ import com.ecs.Entity;
 import com.ecs.components.*;
 import com.ecs.events.CollisionEndEvent;
 import com.ecs.events.CollisionStartEvent;
+import com.ecs.events.PlayerResetEvent;
 import com.ecs.systems.PhysicsSystem;
 
 public class LevelLoader
@@ -154,7 +155,84 @@ public class LevelLoader
 
                 createCrateEntity(ecsEngine, worldX, worldY, width, height);
             }
+            else if(entity.getString("__identifier").equals("DeathZone"))
+            {
+                float width = entity.getFloat("width")  / tileSize * GameConstants.WORLD_SCALE;
+                float height = entity.getFloat("height") / tileSize * GameConstants.WORLD_SCALE;
+
+                createDeathZoneEntity(ecsEngine, worldX, worldY, width, height);
+            }
         }
+    }
+
+    private static void createDeathZoneEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
+    {
+        Entity deathZone = ecsEngine.createEntity();
+        PositionComponent posComp = deathZone.addComponent(new PositionComponent());
+        posComp.position.set(worldX, worldY);
+        posComp.previousPosition.set(worldX, worldY);
+
+        deathZone.addComponent(new DrawComponent()).scale.set(width, height);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(worldX, worldY);
+
+        FixtureDef fixDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2.0f, height / 2.0f);
+        fixDef.shape = shape;
+        fixDef.isSensor = true;
+
+        deathZone.addComponent(PhysicsSystem.createComponentFromDefinition(deathZone, bodyDef, fixDef));
+
+
+        ContactListener listener = new ContactListener()
+        {
+            @Override
+            public void beginContact(Contact contact)
+            {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() != deathZone)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
+                if(fixA.getBody().getUserData() == deathZone)
+                {
+                    Entity player = (Entity)fixB.getBody().getUserData();
+                    if(player.hasComponent(TagComponent.class))
+                    {
+                        if(player.getComponent(TagComponent.class).tag.equals("player"))
+                        {
+                            ecsEngine.fireEvent(new PlayerResetEvent(player));
+
+                            PhysicsComponent phys = player.getComponent(PhysicsComponent.class);
+
+                            for(JointEdge j : phys.body.getJointList())
+                            {
+                                Entity other = (Entity)j.other.getUserData();
+                                ecsEngine.fireEvent(new PlayerResetEvent(other));
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact)  {}
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold){}
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse)  {}
+        };
+
+        PhysicsSystem.addContactListener(listener);
     }
 
     private static void createCrateEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
