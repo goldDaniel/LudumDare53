@@ -34,7 +34,7 @@ public class RenderSystem extends System
 
     private final Array<Renderable> renderables = new Array<>();
 
-    private Viewport viewport = new ExtendViewport(32,32);
+    private Viewport viewport = new ExtendViewport(64,64);
 
     private final SpriteBatch sb;
 

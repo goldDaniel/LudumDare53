@@ -22,7 +22,7 @@ public class PhysicsSystem extends System
     private static ContactListenerGroup listeners;
 
     private static final Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
-    Viewport viewport = new ExtendViewport(32,32);
+    Viewport viewport = new ExtendViewport(64,64);
 
 
     public static PhysicsComponent createComponentFromDefinition(Entity entity, BodyDef def, FixtureDef fixDef)

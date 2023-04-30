@@ -7,8 +7,6 @@ public class InputState
     public boolean up = false;
     public boolean down = false;
 
-    public boolean cwRotate = false;
-    public boolean ccwRotate = false;
 
     public boolean action = false;
 }

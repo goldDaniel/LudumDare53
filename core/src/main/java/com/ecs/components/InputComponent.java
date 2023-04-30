@@ -5,14 +5,10 @@ import com.ecs.Component;
 
 public class InputComponent extends Component
 {
-    public int left = Input.Keys.A;
-    public int right = Input.Keys.D;
-    public int up = Input.Keys.W;
-    public int down =  Input.Keys.S;
+    public int left = Input.Keys.LEFT;
+    public int right = Input.Keys.RIGHT;
+    public int up = Input.Keys.Z;
+    public int down =  Input.Keys.DOWN;
 
-    public int cwRotate = Input.Keys.Q;
-
-    public int ccwRotate = Input.Keys.E;
-
-    public int action = Input.Keys.SPACE;
+    public int action = Input.Keys.X;
 }

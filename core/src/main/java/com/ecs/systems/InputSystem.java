@@ -29,9 +29,6 @@ public class InputSystem extends System
         state.up = Gdx.input.isKeyJustPressed(i.up);
         state.down = Gdx.input.isKeyPressed(i.down);
 
-        state.ccwRotate = Gdx.input.isKeyPressed(i.ccwRotate);
-        state.cwRotate  = Gdx.input.isKeyPressed(i.cwRotate);
-
         state.action = Gdx.input.isKeyPressed(i.action);
 
 

@@ -46,21 +46,28 @@ public class MovementSystem extends System
             {
                 speed.y -= 1;
             }
-            if(i.left)
+
+            if(entity.hasComponent(InAirComponent.class))
             {
-                speed.x -= 1;
+                if(i.left)
+                {
+                    angularSpeed += 1;
+                }
+                if(i.right)
+                {
+                    angularSpeed -= 1;
+                }
             }
-            if(i.right)
+            else
             {
-                speed.x += 1;
-            }
-            if(i.cwRotate)
-            {
-                angularSpeed += 1;
-            }
-            if(i.ccwRotate)
-            {
-                angularSpeed -= 1;
+                if(i.left)
+                {
+                    speed.x -= 1;
+                }
+                if(i.right)
+                {
+                    speed.x += 1;
+                }
             }
 
             if(Math.abs(angularSpeed) > 0)
@@ -127,9 +134,6 @@ public class MovementSystem extends System
                 if(state.right) current.right = true;
                 if(state.up) current.up = true;
                 if(state.down) current.down = true;
-
-                if(state.ccwRotate) current.ccwRotate = true;
-                if(state.cwRotate) current.cwRotate = true;
 
                 if(state.action) current.action = true;
             }
