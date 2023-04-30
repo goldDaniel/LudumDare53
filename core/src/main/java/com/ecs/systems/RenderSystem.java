@@ -19,6 +19,8 @@ import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.Event;
 import com.ecs.events.ResizeEvent;
 
+import java.util.Comparator;
+
 public class RenderSystem extends System
 {
     private class Renderable
@@ -90,6 +92,7 @@ public class RenderSystem extends System
     @Override
     public void postUpdate()
     {
+        renderables.sort(Comparator.comparingInt(r -> r.draw.texture.getTexture().glTarget));
         sb.begin();
 
         for(Renderable r : renderables)
