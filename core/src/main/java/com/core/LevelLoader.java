@@ -347,6 +347,7 @@ public class LevelLoader
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(p.position);
+        bodyDef.gravityScale = 0.5f;
 
         FixtureDef fixDef = new FixtureDef();
 
