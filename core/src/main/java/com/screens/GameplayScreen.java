@@ -90,7 +90,7 @@ public class GameplayScreen extends GameScreen
         table.add(timer);
     }
 
-    private static final float TIME_LIMIT = 10;
+    private static final float TIME_LIMIT = 60;
     private static final float PIZZA_GUY_SPEED = 50;
     private static final float KPH_TO_MPS = 3.6f;
     @Override
@@ -114,7 +114,7 @@ public class GameplayScreen extends GameScreen
         }
 
         elapsedTime += dt;
-        int distance = Math.max((int)((TIME_LIMIT - elapsedTime) * PIZZA_GUY_SPEED * KPH_TO_MPS), 0);
+        int distance = Math.max((int)((TIME_LIMIT - elapsedTime) * PIZZA_GUY_SPEED / KPH_TO_MPS), 0);
         String unit = "";
         if(distance > 1000)
         {
