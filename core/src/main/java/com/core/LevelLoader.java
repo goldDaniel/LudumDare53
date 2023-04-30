@@ -162,8 +162,78 @@ public class LevelLoader
 
                 createDeathZoneEntity(ecsEngine, worldX, worldY, width, height);
             }
+            else if(entity.getString("__identifier").equals("WinZone"))
+            {
+                float width = entity.getFloat("width")  / tileSize * GameConstants.WORLD_SCALE;
+                float height = entity.getFloat("height") / tileSize * GameConstants.WORLD_SCALE;
+
+                createDeathZoneEntity(ecsEngine, worldX, worldY, width, height);
+            }
         }
     }
+
+    private static void createWinZoneEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
+    {
+        Entity winZone = ecsEngine.createEntity();
+        PositionComponent posComp = winZone.addComponent(new PositionComponent());
+        posComp.position.set(worldX, worldY);
+        posComp.previousPosition.set(worldX, worldY);
+
+        winZone.addComponent(new DrawComponent()).scale.set(width, height);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(worldX, worldY);
+
+        FixtureDef fixDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2.0f, height / 2.0f);
+        fixDef.shape = shape;
+        fixDef.isSensor = true;
+
+        winZone.addComponent(PhysicsSystem.createComponentFromDefinition(winZone, bodyDef, fixDef));
+
+
+        ContactListener listener = new ContactListener()
+        {
+            @Override
+            public void beginContact(Contact contact)
+            {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() != winZone)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
+                if(fixA.getBody().getUserData() == winZone)
+                {
+                    Entity player = (Entity)fixB.getBody().getUserData();
+                    if(player.hasComponent(TagComponent.class))
+                    {
+                        if(player.getComponent(TagComponent.class).tag.equals("player"))
+                        {
+                            // win events
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact)  {}
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold){}
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse)  {}
+        };
+
+        PhysicsSystem.addContactListener(listener);
+    }
+
 
     private static void createDeathZoneEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
     {

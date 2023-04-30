@@ -11,7 +11,7 @@
 	"iid": "5cd0e9f0-c640-11ed-8747-fd5b0c5b81fa",
 	"jsonVersion": "1.3.0",
 	"appBuildId": 467368,
-	"nextUid": 57,
+	"nextUid": 58,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -1402,7 +1402,7 @@
 			"fillOpacity": 1,
 			"lineOpacity": 1,
 			"hollow": false,
-			"color": "#26FF00",
+			"color": "#FFD600",
 			"renderMode": "Rectangle",
 			"showName": true,
 			"tilesetId": null,
@@ -1473,14 +1473,43 @@
 			"pivotX": 0.5,
 			"pivotY": 0.5,
 			"fieldDefs": []
+		},
+		{
+			"identifier": "WinZone",
+			"uid": 57,
+			"tags": [],
+			"exportToToc": false,
+			"doc": null,
+			"width": 128,
+			"height": 128,
+			"resizableX": true,
+			"resizableY": true,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 1,
+			"lineOpacity": 1,
+			"hollow": false,
+			"color": "#00FF22",
+			"renderMode": "Rectangle",
+			"showName": true,
+			"tilesetId": null,
+			"tileRenderMode": "FitInside",
+			"tileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 1,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0.5,
+			"pivotY": 0.5,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{
 			"__cWid": 11,
 			"__cHei": 5,
-			"identifier": "Tileset",
+			"identifier": "Tileset8",
 			"uid": 1,
-			"relPath": "../textures/Tilesets/Tileset3.png",
+			"relPath": "../textures/Tilesets/Tileset8.png",
 			"embedAtlas": null,
 			"pxWid": 352,
 			"pxHei": 160,
@@ -1494,7 +1523,7 @@
 			"savedSelections": [],
 			"cachedPixelData": {
 				"opaqueTiles": "0000000001001000110110000001101110000000001100000110100",
-				"averageColors": "f985fa95fa95f984f985fa85fa85fa95fa85fb960000fa85fc96fb96f985fa85fb96fb96fb96fb96fb960000fa85fb96fa95f994fa85fb96fb96fb95fb96fb96fb96f984fa95f994f894f985fb96fa95fa95fa95fb86fb960000000000000000fa85fb96fb96fa95fb8600000000"
+				"averageColors": "f843f843f843f953f843f843f843f843f843f8320000f843f832f843f843f843f832f832f843f832f8320000f843f843f843f853f843f832f832f843f832f832f832f853f843f953f953f843f843f843f843f843f832f8320000000000000000f843f832f832f843f84200000000"
 			}
 		}
 	], "enums": [], "externalEnums": [], "levelFields": [] },
@@ -1550,7 +1579,7 @@
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
-							"__smartColor": "#26FF00",
+							"__smartColor": "#FFD600",
 							"iid": "8c602920-c640-11ed-b356-67b58ee7f841",
 							"width": 96,
 							"height": 32,
@@ -2060,7 +2089,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 1,
-					"__tilesetRelPath": "../textures/Tilesets/Tileset3.png",
+					"__tilesetRelPath": "../textures/Tilesets/Tileset8.png",
 					"iid": "af7e6150-c640-11ed-8747-b1d387ddea6c",
 					"levelId": 0,
 					"layerDefUid": 2,
@@ -19474,7 +19503,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 1,
-					"__tilesetRelPath": "../textures/Tilesets/Tileset3.png",
+					"__tilesetRelPath": "../textures/Tilesets/Tileset8.png",
 					"iid": "2b7a9b82-c640-11ed-9b56-c5f7da58bfbf",
 					"levelId": 51,
 					"layerDefUid": 2,
@@ -19794,7 +19823,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 1,
-					"__tilesetRelPath": "../textures/Tilesets/Tileset3.png",
+					"__tilesetRelPath": "../textures/Tilesets/Tileset8.png",
 					"iid": "673151f0-c640-11ed-9b56-bf8031ac1a6f",
 					"levelId": 52,
 					"layerDefUid": 2,
@@ -27006,7 +27035,22 @@
 					"seed": 8451256,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "WinZone",
+							"__grid": [96,67],
+							"__pivot": [0.5,0.5],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#00FF22",
+							"iid": "fdc14030-c640-11ed-a952-0f43f5acab8d",
+							"width": 448,
+							"height": 256,
+							"defUid": 57,
+							"px": [3072,2144],
+							"fieldInstances": []
+						}
+					]
 				},
 				{
 					"__identifier": "Collision",
@@ -27018,7 +27062,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 1,
-					"__tilesetRelPath": "../textures/Tilesets/Tileset3.png",
+					"__tilesetRelPath": "../textures/Tilesets/Tileset8.png",
 					"iid": "fdb19c20-c640-11ed-9b56-6ddebac915b0",
 					"levelId": 53,
 					"layerDefUid": 2,
