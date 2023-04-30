@@ -73,9 +73,9 @@ public class MovementSystem extends System
 
             if(Math.abs(angularSpeed) > 0)
             {
-                p.body.applyTorque(angularSpeed * 0.03f * GameConstants.WORLD_SCALE, true);
+                p.body.applyTorque(angularSpeed * 0.05f * GameConstants.WORLD_SCALE, true);
                 float angularVel = p.body.getAngularVelocity();
-                angularVel = MathUtils.clamp(angularVel, -0.5f * GameConstants.WORLD_SCALE, 0.5f * GameConstants.WORLD_SCALE);
+                angularVel = MathUtils.clamp(angularVel, -0.5f, 0.5f);
                 p.body.setAngularVelocity(angularVel);
             }
             else
