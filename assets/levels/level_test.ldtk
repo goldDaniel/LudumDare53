@@ -43134,7 +43134,7 @@
 						},
 						{
 							"__identifier": "DeathZone",
-							"__grid": [156,179],
+							"__grid": [158,178],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
 							"__tile": null,
@@ -43143,7 +43143,7 @@
 							"width": 9984,
 							"height": 128,
 							"defUid": 56,
-							"px": [5008,5744],
+							"px": [5072,5712],
 							"fieldInstances": []
 						}
 					]
