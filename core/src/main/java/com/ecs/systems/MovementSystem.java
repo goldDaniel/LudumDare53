@@ -105,11 +105,11 @@ public class MovementSystem extends System
                     p.body.setLinearVelocity(0, velocity.y);
                 }
 
-                speed.nor().scl(0.2f);
+                speed.nor().scl(0.003f);
 
                 if(velocity.x < maxXVelocity)
                 {
-                    p.body.applyForceToCenter(speed, true);
+                    p.body.applyLinearImpulse(speed, p.body.getPosition(), true);
                 }
             }
             else  if(!entity.hasComponent(InAirComponent.class))
