@@ -28,6 +28,8 @@ public class GameplayScreen extends GameScreen
     private float renderAlpha;
     private CutsceneScreen.CutsceneType gameResult = CutsceneScreen.CutsceneType.WIN;
 
+    private RenderSystem renderSystem;
+
     public GameplayScreen(Game game)
     {
         super(game);
@@ -42,7 +44,7 @@ public class GameplayScreen extends GameScreen
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
-        ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
+        renderSystem = ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
         ecsEngine.registerRenderSystem(new GameOverSystem(ecsEngine, () ->
         {
             MusicMaster.pauseMusic();
@@ -58,7 +60,7 @@ public class GameplayScreen extends GameScreen
 
     private void loadLevelIntoECS()
     {
-        LevelLoader.loadFromFile(ecsEngine, "level_test.ldtk");
+        LevelLoader.loadFromFile(ecsEngine, "level_test.ldtk", renderSystem);
     }
 
 

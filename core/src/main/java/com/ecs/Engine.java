@@ -27,19 +27,22 @@ public class Engine
         gameSystems = new com.badlogic.ashley.core.Engine();
     }
 
-    public <T extends System> void registerPhysicsSystem(T system)
+    public <T extends System> T registerPhysicsSystem(T system)
     {
         physicsSystems.addSystem(system);
+        return (T)physicsSystems.getSystem(system.getClass());
     }
 
-    public <T extends System> void registerGameSystem(T system)
+    public <T extends System> T registerGameSystem(T system)
     {
         gameSystems.addSystem(system);
+        return (T)gameSystems.getSystem(system.getClass());
     }
 
-    public <T extends System> void registerRenderSystem(T system)
+    public <T extends System> T registerRenderSystem(T system)
     {
         renderSystems.addSystem(system);
+        return (T)renderSystems.getSystem(system.getClass());
     }
 
 

@@ -181,7 +181,6 @@ public class PhysicsSystem extends System
     protected void postUpdate()
     {
         super.postUpdate();
-        debugRenderer.render(world, viewport.getCamera().combined);
     }
 
     @Override
