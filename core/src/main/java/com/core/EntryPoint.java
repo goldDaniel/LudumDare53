@@ -10,6 +10,8 @@ public class EntryPoint extends Game
     {
         RenderResources.init();
         AudioResources.init();
+        MusicMaster.init();
+        MusicMaster.setVolume(0.5f);
 
         setScreen(new SplashScreen(this));
     }

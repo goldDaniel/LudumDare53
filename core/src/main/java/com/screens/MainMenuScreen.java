@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.core.MusicMaster;
 
 public class MainMenuScreen extends GameScreen
 {
@@ -32,7 +33,7 @@ public class MainMenuScreen extends GameScreen
             @Override
             public boolean act(float delta)
             {
-                transitionTo(new GameplayScreen(game));
+                transitionTo(new CutsceneScreen(game, CutsceneScreen.CutsceneType.INTRO));
                 return true;
             }
         };
@@ -61,6 +62,13 @@ public class MainMenuScreen extends GameScreen
             }
         });
         table.add(createButton("Exit", extiAction, table, skin)).padTop(64);
+    }
+
+    @Override
+    public void show()
+    {
+        super.show();
+        MusicMaster.playMusic("menu", true);
     }
 
     @Override

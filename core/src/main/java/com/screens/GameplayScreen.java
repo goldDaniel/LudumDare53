@@ -3,6 +3,7 @@ package com.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,11 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.core.AudioResources;
-import com.core.Collisions;
-import com.core.GameConstants;
-import com.core.LevelLoader;
-import com.core.RenderResources;
+import com.core.*;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.components.*;
@@ -35,6 +32,7 @@ public class GameplayScreen extends GameScreen
     private float accumulator;
     private float elapsedTime;
     private float renderAlpha;
+    private CutsceneScreen.CutsceneType gameResult = CutsceneScreen.CutsceneType.WIN;
 
     public GameplayScreen(Game game)
     {
@@ -51,16 +49,17 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
         ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
-        ecsEngine.registerRenderSystem(new GameOverSystem(ecsEngine, () -> transitionTo(new MainMenuScreen(game))));;
+        ecsEngine.registerRenderSystem(new GameOverSystem(ecsEngine, () ->
+        {
+            MusicMaster.pauseMusic();
+            game.setScreen(new CutsceneScreen(game, gameResult));
+        }));;
 
         loadLevelIntoECS();
 
-        ecsEngine.fireEvent(new StartEvent(null));
-    }
+        MusicMaster.playSequentialMusic(true, "level_start", "level_loop");
 
-    public void doEvent(Event event)
-    {
-        ecsEngine.fireEvent(event);
+        ecsEngine.fireEvent(new StartEvent(null));
     }
 
     private void loadLevelIntoECS()
@@ -73,12 +72,14 @@ public class GameplayScreen extends GameScreen
     public void show()
     {
         super.show();
+        ecsEngine.fireEvent(new StartEvent(null));
     }
 
     @Override
     public void hide()
     {
         super.hide();
+        ecsEngine.fireEvent(new PauseEvent(null));
     }
 
     Label timer;
@@ -98,7 +99,6 @@ public class GameplayScreen extends GameScreen
     {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
-            ecsEngine.fireEvent(new PauseEvent(null));
             game.setScreen(new PauseScreen(game,this));
         }
 
@@ -132,9 +132,9 @@ public class GameplayScreen extends GameScreen
 
         if(elapsedTime >= TIME_LIMIT)
         {
+            gameResult = CutsceneScreen.CutsceneType.LOSE;
             Entity e = ecsEngine.createEntity();
             e.addComponent(new GameOverComponent());
-            ecsEngine.fireEvent(new PauseEvent(null));
         }
     }
 
