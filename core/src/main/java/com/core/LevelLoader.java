@@ -249,8 +249,6 @@ public class LevelLoader
         posComp.position.set(worldX, worldY);
         posComp.previousPosition.set(worldX, worldY);
 
-        winZone.addComponent(new DrawComponent()).scale.set(width, height);
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(worldX, worldY);
