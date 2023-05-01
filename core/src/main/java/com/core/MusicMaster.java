@@ -1,12 +1,14 @@
 package com.core;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.utils.Queue;
 
 public class MusicMaster
 {
     private static boolean hasInitialized = false;
 
     private static Music currentSong;
+    private static Queue<Music> queuedSongs = new Queue<>();
 
     public static void init()
     {
@@ -16,7 +18,8 @@ public class MusicMaster
 
     public static void setMusic(Music song, float volume)
     {
-        pauseMusic();
+        queuedSongs.clear();
+        stopMusic();
         currentSong = song;
         setVolume(volume);
         currentSong.setPosition(0);
@@ -25,6 +28,7 @@ public class MusicMaster
 
     public static void playMusic(String songName, boolean isLooping, float volume)
     {
+        queuedSongs.clear();
         Music song = AudioResources.getMusic("audio\\music\\" + songName + ".wav");
         song.setLooping(isLooping);
         if(currentSong != null && currentSong.isPlaying() && !currentSong.equals(song))
@@ -40,40 +44,45 @@ public class MusicMaster
 
     public static void playSequentialMusic(boolean finalIsLooping, float volume, String... songNames)
     {
-        for(int i = 0; i < songNames.length - 1; i++)
+        queuedSongs.clear();
+        for(int i = 1; i < songNames.length; i++)
         {
-            Music song = AudioResources.getMusic("audio\\music\\" + songNames[i] + ".wav");
-            if(i == songNames.length - 2)
+            Music queuedSong = AudioResources.getMusic("audio\\music\\" + songNames[i] + ".wav");
+            queuedSong.setVolume(volume);
+            if(i == songNames.length - 1)
             {
-                Music nextSong = AudioResources.getMusic("audio\\music\\" + songNames[i + 1] + ".wav");
-                song.setOnCompletionListener((s) ->
-                {
-                    nextSong.setLooping(finalIsLooping);
-                    setMusic(nextSong, volume);
-                });
+                queuedSong.setLooping(finalIsLooping);
             }
             else
             {
-                Music nextSong = AudioResources.getMusic("audio\\music\\" + songNames[i + 1] + ".wav");
-                song.setOnCompletionListener((s) ->
-                {
-                    nextSong.setLooping(false);
-                    setMusic(nextSong, volume);
-                });
+                queuedSong.setLooping(false);
             }
+
+            queuedSongs.addLast(queuedSong);
         }
 
-        setMusic(AudioResources.getMusic("audio\\music\\" + songNames[0] + ".wav"), volume);
+        stopMusic();
+        currentSong = AudioResources.getMusic("audio\\music\\" + songNames[0] + ".wav");
+        setVolume(volume);
+        currentSong.setPosition(0);
+        currentSong.play();
     }
 
-    public static void pauseMusic()
+    public static void step()
     {
-        if(currentSong!= null && currentSong.isPlaying()) currentSong.pause();
+        if(currentSong != null && !currentSong.isPlaying())
+        {
+            if(queuedSongs.size > 0)
+            {
+                currentSong = queuedSongs.removeFirst();
+                currentSong.play();
+            }
+        }
     }
 
-    public static void resumeMusic()
+    public static void stopMusic()
     {
-        if(currentSong!= null && !currentSong.isPlaying()) currentSong.play();
+        if(currentSong!= null && currentSong.isPlaying()) currentSong.stop();
     }
 
     public static void setVolume(float volume)

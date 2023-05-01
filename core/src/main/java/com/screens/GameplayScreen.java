@@ -43,7 +43,6 @@ public class GameplayScreen extends GameScreen
         ecsEngine.registerGameSystem(new InAirSystem(ecsEngine));
         ecsEngine.registerGameSystem(new GameOverSystem(ecsEngine, () ->
         {
-            MusicMaster.pauseMusic();
             game.setScreen(new CutsceneScreen(game, gameResult));
         }));;
 
@@ -53,7 +52,6 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
         renderSystem = ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
-
 
         loadLevelIntoECS();
 
