@@ -3,6 +3,7 @@ package com.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -311,7 +312,14 @@ public class LevelLoader
         posComp.position.set(worldX, worldY);
         posComp.previousPosition.set(worldX, worldY);
 
-        deathZone.addComponent(new DrawComponent()).scale.set(width, height);
+        DrawComponent d = deathZone.addComponent(new DrawComponent());
+        d.scale.set(width, height);
+        d.texture.setTexture(RenderResources.getTexture("textures/entities/lava.png"));
+        d.texture.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        d.texture.setRegionX(0);
+        d.texture.setRegionX(0);
+        d.texture.setRegionWidth((int)Math.max(d.texture.getTexture().getWidth(), d.texture.getTexture().getWidth() * width));
+        d.texture.setRegionHeight((int)Math.max(d.texture.getTexture().getHeight(), d.texture.getTexture().getHeight() *  height));
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
