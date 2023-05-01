@@ -29862,7 +29862,22 @@
 					"seed": 3158473,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "WinZone",
+							"__grid": [27,15],
+							"__pivot": [0.5,0.5],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#00FF22",
+							"iid": "bdf37470-c640-11ed-a657-3318681515a9",
+							"width": 640,
+							"height": 2272,
+							"defUid": 57,
+							"px": [880,496],
+							"fieldInstances": []
+						}
+					]
 				},
 				{
 					"__identifier": "Collision",
