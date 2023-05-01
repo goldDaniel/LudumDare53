@@ -7,6 +7,7 @@ public class MusicMaster
 {
     private static boolean hasInitialized = false;
 
+    private static float volumeFactor = 1;
     private static Music currentSong;
     private static Queue<Music> queuedSongs = new Queue<>();
 
@@ -14,16 +15,6 @@ public class MusicMaster
     {
         if(hasInitialized) throw new IllegalStateException("Music Master already initialized");
         hasInitialized = true;
-    }
-
-    public static void setMusic(Music song, float volume)
-    {
-        queuedSongs.clear();
-        stopMusic();
-        currentSong = song;
-        setVolume(volume);
-        currentSong.setPosition(0);
-        currentSong.play();
     }
 
     public static void playMusic(String songName, boolean isLooping, float volume)
@@ -76,6 +67,7 @@ public class MusicMaster
             {
                 currentSong = queuedSongs.removeFirst();
                 currentSong.play();
+                setVolumeRelative(volumeFactor);
             }
         }
     }
@@ -92,6 +84,7 @@ public class MusicMaster
 
     public static void setVolumeRelative(float factor)
     {
+        volumeFactor = Math.min(Math.max(factor, 0.f), 1.f);
         if(currentSong!= null) currentSong.setVolume(currentSong.getVolume() * factor);
     }
 }
