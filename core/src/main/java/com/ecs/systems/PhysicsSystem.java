@@ -1,8 +1,6 @@
 package com.ecs.systems;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -29,7 +27,6 @@ public class PhysicsSystem extends System
 
     private static final Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
     Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
-
 
     public static PhysicsComponent createComponentFromDefinition(Entity entity, BodyDef def, FixtureDef fixDef)
     {
