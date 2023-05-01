@@ -16,9 +16,8 @@ import com.core.RenderResources;
 public abstract class GameScreen implements Screen
 {
     private final InputMultiplexer multiplexer;
-    private final GameSkin skin;
     private final Stage uiStage;
-    private final Viewport viewport;
+    protected final Viewport viewport;
 
     protected Game game;
 
@@ -27,7 +26,7 @@ public abstract class GameScreen implements Screen
     {
         this.game = game;
 
-        skin = new GameSkin();
+        GameSkin skin = new GameSkin();
         viewport = new ExtendViewport(1280, 720);
         uiStage = new Stage(viewport, RenderResources.getSpriteBatch());
 

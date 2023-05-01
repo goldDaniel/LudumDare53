@@ -63,8 +63,8 @@ public class CutsceneScreen extends GameScreen
         for (int i = 0; i < numPictures; i++)
         {
             Image image = new Image(new Texture(path + i + ".png"));
-            image.setWidth(Gdx.graphics.getWidth());
-            image.setHeight(Gdx.graphics.getHeight());
+            image.setWidth(viewport.getWorldWidth());
+            image.setHeight(viewport.getWorldHeight());
             images.add(image);
         }
 
