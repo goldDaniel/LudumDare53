@@ -38,8 +38,9 @@ public class LevelLoader
 
             // add level zones for camera bounds
             {
-                Entity cameraZone = ecsEngine.createEntity();
-
+                float zoneWidth = level.getInt("pxWid") / tileSize * GameConstants.WORLD_SCALE;
+                float zoneHeight = level.getInt("pxHei") / tileSize * GameConstants.WORLD_SCALE;
+                ecsEngine.fireEvent(new AddCameraZoneEvent(null, worldXOffset, zoneHeight - worldYOffset, zoneWidth, zoneHeight));
             }
 
             // add entities and tiles

@@ -5,8 +5,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.core.ContactListenerGroup;
@@ -76,7 +74,7 @@ public class PhysicsSystem extends System
     protected void preUpdate()
     {
         super.preUpdate();
-        world.step(engine.getPhysicsUpdateRate(), 12, 12);
+        world.step(engine.getPhysicsUpdateRate(), 6, 4);
     }
 
     private void HandlePlayerRenderRotation(Entity player)
