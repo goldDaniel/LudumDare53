@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.core.LevelLoader;
+import com.core.MusicMaster;
 import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
