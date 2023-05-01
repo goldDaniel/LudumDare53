@@ -18,7 +18,7 @@ public class Engine
 
     private boolean isUpdating = false;
 
-    private float physicsUpdateRate = 1.0f/60.f;
+    private float physicsUpdateRate = 1.0f/30.f;
 
     public Engine()
     {
