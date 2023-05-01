@@ -1,6 +1,7 @@
 package com.ecs;
 
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.utils.Array;
 import com.ecs.events.Event;
 
@@ -12,6 +13,8 @@ public abstract class System extends com.badlogic.ashley.core.EntitySystem
     protected final Engine engine;
     protected com.badlogic.ashley.core.Engine ashleyEngine;
 
+    protected ImmutableArray<com.badlogic.ashley.core.Entity> entities;
+
     public System(Engine engine)
     {
         super();
@@ -22,6 +25,14 @@ public abstract class System extends com.badlogic.ashley.core.EntitySystem
     public void addedToEngine(com.badlogic.ashley.core.Engine engine)
     {
         ashleyEngine = engine;
+
+        Class<? extends com.badlogic.ashley.core.Component>[] clazz = new Class[components.size];
+        for(int i = 0; i < components.size; i++)
+        {
+            clazz[i] = components.get(i);
+        }
+
+        entities = ashleyEngine.getEntitiesFor(Family.all(clazz).get());
     }
 
     public void registerComponentType(Class<? extends Component> clazz)
@@ -42,13 +53,7 @@ public abstract class System extends com.badlogic.ashley.core.EntitySystem
     {
         preUpdate();
 
-        Class<? extends com.badlogic.ashley.core.Component>[] clazz = new Class[components.size];
-        for(int i = 0; i < components.size; i++)
-        {
-            clazz[i] = components.get(i);
-        }
-
-        for(com.badlogic.ashley.core.Entity e : ashleyEngine.getEntitiesFor(Family.all(clazz).get()))
+        for(com.badlogic.ashley.core.Entity e : entities)
         {
             updateEntity((Entity)e, dt);
         }
