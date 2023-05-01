@@ -126,7 +126,7 @@ public class GameplayScreen extends GameScreen
 
         if(elapsedTime >= TIME_LIMIT)
         {
-            gameResult = CutsceneScreen.CutsceneType.LOSE;
+            gameResult = CutsceneScreen.CutsceneType.WIN;
             Entity e = ecsEngine.createEntity();
             e.addComponent(new GameOverComponent());
         }

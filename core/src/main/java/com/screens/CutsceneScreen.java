@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.core.AudioResources;
 import com.core.MusicMaster;
 import com.core.RenderResources;
+import com.ecs.events.ResizeEvent;
 
 import java.util.ArrayList;
 
@@ -38,22 +39,22 @@ public class CutsceneScreen extends GameScreen
         {
             case INTRO:
             {
-                currIndices = new int[]{0, 1, 0, 2, 3, 4, 5, 6, 7, 8};
-                numPictures = 9;
+                currIndices = new int[]{0, 1, 0, 2, 3, 4, 5, 6, 7, 8, 9};
+                numPictures = 10;
                 path += "intro\\intro_";
                 break;
             }
             case LOSE:
             {
-                currIndices = new int[]{0, 4, 2, 5};
-                numPictures = 6;
+                currIndices = new int[]{0, 5, 6, 7, 8};
+                numPictures = 9;
                 path += "outro\\outro_";
                 break;
             }
             case WIN:
             {
-                currIndices = new int[]{0, 1, 2, 3, 0, 4, 2, 5};
-                numPictures = 6;
+                currIndices = new int[]{0, 1, 2, 3, 4, 0, 5, 6, 7, 8};
+                numPictures = 9;
                 path += "outro\\outro_";
                 break;
             }
@@ -88,7 +89,7 @@ public class CutsceneScreen extends GameScreen
 
     }
 
-    private static final float IMAGE_DURATION = 2;
+    private static final float IMAGE_DURATION = 1.5f;
     private float imageTimer = IMAGE_DURATION;
     private int currImageIndex = 0;
     @Override
@@ -119,6 +120,17 @@ public class CutsceneScreen extends GameScreen
             RenderResources.getSpriteBatch().begin();
             images.get(currIndices[currImageIndex]).draw(RenderResources.getSpriteBatch(), 1);
             RenderResources.getSpriteBatch().end();
+        }
+    }
+
+    @Override
+    public void resize(int width, int height)
+    {
+        super.resize(width, height);
+        for(Image image : images)
+        {
+            image.setWidth(viewport.getWorldWidth());
+            image.setHeight(viewport.getWorldHeight());
         }
     }
 }
