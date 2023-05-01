@@ -1,10 +1,10 @@
 package com.ecs.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Queue;
 import com.core.GameConstants;
 import com.core.InputState;
 import com.ecs.Engine;
@@ -20,6 +20,9 @@ public class MovementSystem extends System
 {
     private ArrayMap<Entity, InputState> movementState = new ArrayMap<>();
 
+    private ComponentMapper<InputComponent> inputMapper = ComponentMapper.getFor(InputComponent.class);
+    private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+
     public MovementSystem(Engine engine)
     {
         super(engine);
@@ -33,7 +36,7 @@ public class MovementSystem extends System
     @Override
     public void updateEntity(Entity entity, float dt)
     {
-        PhysicsComponent p = entity.getComponent(PhysicsComponent.class);
+        PhysicsComponent p = physicsMapper.get(entity);
 
         if(movementState.containsKey(entity))
         {

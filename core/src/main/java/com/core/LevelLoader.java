@@ -31,9 +31,17 @@ public class LevelLoader
 
         for(JsonValue level : root.get("levels"))
         {
+
             float worldXOffset =  level.getInt("worldX") / tileSize * GameConstants.WORLD_SCALE;
             float worldYOffset =  level.getInt("worldY") / tileSize * GameConstants.WORLD_SCALE;
 
+            // add level zones for camera bounds
+            {
+                Entity cameraZone = ecsEngine.createEntity();
+
+            }
+
+            // add entities and tiles
             JsonValue collisionLayer = null;
             JsonValue entityLayer = null;
             for(JsonValue layer : level.get("layerInstances"))

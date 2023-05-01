@@ -1,5 +1,7 @@
 package com.ecs.systems;
 
+import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.ComponentMapper;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -14,6 +16,8 @@ public class GameOverSystem extends System
 
     private final IScreenTransition transition;
 
+    private ComponentMapper<GameOverComponent> gameOverMapper = ComponentMapper.getFor(GameOverComponent.class);
+
     public GameOverSystem(Engine engine, IScreenTransition transition)
     {
         super(engine);
@@ -26,7 +30,7 @@ public class GameOverSystem extends System
     @Override
     protected void updateEntity(Entity entity, float dt)
     {
-        GameOverComponent g = entity.getComponent(GameOverComponent.class);
+        GameOverComponent g = gameOverMapper.get(entity);
 
         g.timer -= dt;
         if(g.timer <= 0)

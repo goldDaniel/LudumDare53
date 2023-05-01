@@ -1,5 +1,6 @@
 package com.ecs.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.core.GameConstants;
@@ -20,6 +21,10 @@ public class BombSystem extends System
 {
     private final ArrayMap<Entity, InputState> actionState = new ArrayMap<>();
 
+    private ComponentMapper<InputComponent> inputMapper = ComponentMapper.getFor(InputComponent.class);
+    private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+    private ComponentMapper<BombComponent> bombMapper = ComponentMapper.getFor(BombComponent.class);
+
     public BombSystem(Engine engine)
     {
         super(engine);
@@ -35,8 +40,8 @@ public class BombSystem extends System
     @Override
     public void updateEntity(Entity entity, float dt)
     {
-        PhysicsComponent p = entity.getComponent(PhysicsComponent.class);
-        BombComponent b = entity.getComponent(BombComponent.class);
+        PhysicsComponent p = physicsMapper.get(entity);
+        BombComponent b = bombMapper.get(entity);
 
         if(actionState.containsKey(entity))
         {

@@ -1,5 +1,6 @@
 package com.ecs.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,9 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.core.GameConstants;
+import com.ecs.Component;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -25,21 +28,27 @@ public class RenderSystem extends System
 {
     private class Renderable
     {
-        final Vector2 position;
-        final DrawComponent draw;
-
-        public Renderable(Vector2 position, DrawComponent d)
-        {
-            this.position = position;
-            this.draw = d;
-        }
+        public Vector2 position = new Vector2();
+        public DrawComponent draw = new DrawComponent();
     }
+
+    private Pool<Renderable> renderablePool = new Pool<Renderable>(4096)
+    {
+        @Override
+        protected Renderable newObject()
+        {
+            return new Renderable();
+        }
+    };
 
     private final Array<Renderable> renderables = new Array<>();
 
     private Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
 
     private final SpriteBatch sb;
+
+    private ComponentMapper<PositionComponent> posMapper = ComponentMapper.getFor(PositionComponent.class);
+    private ComponentMapper<DrawComponent> drawMapper = ComponentMapper.getFor(DrawComponent.class);
 
     public RenderSystem(Engine engine, SpriteBatch sb)
     {
@@ -79,14 +88,17 @@ public class RenderSystem extends System
     @Override
     public void updateEntity(Entity entity, float alpha)
     {
-        PositionComponent p = entity.getComponent(PositionComponent.class);
-        DrawComponent d = entity.getComponent(DrawComponent.class);
+        PositionComponent p = posMapper.get(entity);
+        DrawComponent d = drawMapper.get(entity);
 
-        Vector2 position = new Vector2();
-        position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
-        position.y = p.position.y * alpha + p.previousPosition.y * (1.0f - alpha);
+        Renderable renderable = renderablePool.obtain();
 
-        renderables.add(new Renderable(position, d));
+        renderable.position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
+        renderable.position.y = p.position.y * alpha + p.previousPosition.y * (1.0f - alpha);
+        renderable.draw = d;
+
+
+        renderables.add(renderable);
     }
 
     @Override
@@ -117,5 +129,8 @@ public class RenderSystem extends System
         }
 
         sb.end();
+
+        renderablePool.freeAll(renderables);
+        renderables.clear();
     }
 }
