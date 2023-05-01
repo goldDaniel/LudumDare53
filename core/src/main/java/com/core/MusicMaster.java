@@ -17,16 +17,6 @@ public class MusicMaster
         hasInitialized = true;
     }
 
-    public static void setMusic(Music song, float volume)
-    {
-        queuedSongs.clear();
-        stopMusic();
-        currentSong = song;
-        setVolume(volume);
-        currentSong.setPosition(0);
-        currentSong.play();
-    }
-
     public static void playMusic(String songName, boolean isLooping, float volume)
     {
         queuedSongs.clear();
