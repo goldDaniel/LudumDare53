@@ -28,7 +28,7 @@ public class MainMenuScreen extends GameScreen
     {
         table.top();
 
-        table.add(new Label("Ludum Dare 53", skin, "splash_title"));
+        table.add(new Label("Dough or Die", skin, "splash_title"));
         table.row();
 
         Action playAction = new Action()
