@@ -2,9 +2,9 @@ package com.ecs.events;
 
 import com.ecs.Entity;
 
-public class PlayerResetEvent extends Event
+public class CheckpointEvent extends Event
 {
-    public PlayerResetEvent(Entity entity)
+    public CheckpointEvent(Entity entity)
     {
         super(entity);
     }

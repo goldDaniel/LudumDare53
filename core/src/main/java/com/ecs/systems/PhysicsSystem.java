@@ -17,7 +17,6 @@ import com.ecs.System;
 import com.ecs.components.*;
 import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.Event;
-import com.ecs.events.PlayerResetEvent;
 import com.ecs.events.ResizeEvent;
 
 public class PhysicsSystem extends System
@@ -49,9 +48,6 @@ public class PhysicsSystem extends System
         return world.createJoint(joint);
     }
 
-    private ArrayMap<Entity, Vector2> initialPositions = new ArrayMap<>();
-    private Array<Entity> entitiesToReset = new Array<>();
-    private boolean firstFrame = true;
 
     private ComponentMapper<PositionComponent> posMapper = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
@@ -74,28 +70,12 @@ public class PhysicsSystem extends System
 
         registerEventType(ResizeEvent.class);
         registerEventType(CameraUpdateEvent.class);
-        registerEventType(PlayerResetEvent.class);
     }
 
     @Override
     protected void preUpdate()
     {
         super.preUpdate();
-
-
-        if(firstFrame)
-        {
-            Array<Body> bodies = new Array<>();
-            world.getBodies(bodies);
-
-            for(Body b : bodies)
-            {
-                initialPositions.put((Entity)b.getUserData(), b.getPosition().cpy());
-            }
-
-            firstFrame = false;
-        }
-
         world.step(engine.getPhysicsUpdateRate(), 12, 12);
     }
 
@@ -150,17 +130,6 @@ public class PhysicsSystem extends System
         PositionComponent p = posMapper.get(e);
         PhysicsComponent phys = physicsMapper.get(e);
 
-        if(entitiesToReset.contains(e, true))
-        {
-            Vector2 initialPos = initialPositions.get(e);
-
-            p.position.set(initialPos);
-            p.previousPosition.set(initialPos);
-            phys.body.setTransform(initialPos, 0);
-
-            entitiesToReset.removeValue(e, true);
-        }
-
         p.previousPosition.set(p.position);
         p.position.set(phys.body.getPosition());
 
@@ -197,10 +166,6 @@ public class PhysicsSystem extends System
             CameraUpdateEvent e = (CameraUpdateEvent)event;
             viewport.setCamera(e.cam);
             viewport.apply();
-        }
-        else if(event instanceof PlayerResetEvent)
-        {
-            entitiesToReset.add(event.entity);
         }
     }
 }

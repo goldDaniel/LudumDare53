@@ -11,7 +11,7 @@
 	"iid": "5cd0e9f0-c640-11ed-8747-fd5b0c5b81fa",
 	"jsonVersion": "1.3.0",
 	"appBuildId": 467368,
-	"nextUid": 65,
+	"nextUid": 66,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -31,7 +31,7 @@
 	"imageExportMode": "None",
 	"exportLevelBg": true,
 	"pngFilePattern": null,
-	"backupOnSave": false,
+	"backupOnSave": true,
 	"backupLimit": 10,
 	"backupRelPath": null,
 	"levelNamePattern": "Level_%idx",
@@ -1502,6 +1502,35 @@
 			"pivotX": 0.5,
 			"pivotY": 0.5,
 			"fieldDefs": []
+		},
+		{
+			"identifier": "Checkpoint",
+			"uid": 65,
+			"tags": [],
+			"exportToToc": false,
+			"doc": null,
+			"width": 128,
+			"height": 128,
+			"resizableX": true,
+			"resizableY": true,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 1,
+			"lineOpacity": 1,
+			"hollow": false,
+			"color": "#4800FF",
+			"renderMode": "Rectangle",
+			"showName": true,
+			"tilesetId": null,
+			"tileRenderMode": "FitInside",
+			"tileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0.5,
+			"pivotY": 0.5,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{
@@ -1533,7 +1562,7 @@
 			"iid": "5cd13810-c640-11ed-8747-fb195d7ca24c",
 			"uid": 0,
 			"worldX": 0,
-			"worldY": 0,
+			"worldY": -128,
 			"worldDepth": 0,
 			"pxWid": 9408,
 			"pxHei": 4672,
@@ -2747,6 +2776,20 @@
 							"height": 32,
 							"defUid": 47,
 							"px": [416,2112],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "Checkpoint",
+							"__grid": [14,67],
+							"__pivot": [0.5,0.5],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#4800FF",
+							"iid": "1f58e4d0-c640-11ed-84b4-9d152ba737a7",
+							"width": 736,
+							"height": 128,
+							"defUid": 65,
+							"px": [464,2160],
 							"fieldInstances": []
 						}
 					]
@@ -27707,7 +27750,22 @@
 					"seed": 8451256,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "Checkpoint",
+							"__grid": [14,69],
+							"__pivot": [0.5,0.5],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#4800FF",
+							"iid": "2888f420-c640-11ed-84b4-7f790ab1c6ce",
+							"width": 864,
+							"height": 128,
+							"defUid": 65,
+							"px": [464,2224],
+							"fieldInstances": []
+						}
+					]
 				},
 				{
 					"__identifier": "Collision",
@@ -28523,7 +28581,22 @@
 					"seed": 3821615,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "Checkpoint",
+							"__grid": [277,55],
+							"__pivot": [0.5,0.5],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#4800FF",
+							"iid": "3c0cae60-c640-11ed-84b4-158bafe7744e",
+							"width": 800,
+							"height": 224,
+							"defUid": 65,
+							"px": [8880,1776],
+							"fieldInstances": []
+						}
+					]
 				},
 				{
 					"__identifier": "Collision",

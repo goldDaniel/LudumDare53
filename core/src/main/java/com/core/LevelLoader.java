@@ -171,7 +171,73 @@ public class LevelLoader
 
                 createWinZoneEntity(ecsEngine, worldX, worldY, width, height);
             }
+            else if(entity.getString("__identifier").equals("Checkpoint"))
+            {
+                float width = entity.getFloat("width")  / tileSize * GameConstants.WORLD_SCALE;
+                float height = entity.getFloat("height") / tileSize * GameConstants.WORLD_SCALE;
+
+                createCheckpointZoneEntity(ecsEngine, worldX, worldY, width, height);
+            }
         }
+    }
+
+    private static void createCheckpointZoneEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
+    {
+        Entity checkpoint = ecsEngine.createEntity();
+        PositionComponent posComp = checkpoint.addComponent(new PositionComponent());
+        posComp.position.set(worldX, worldY);
+        posComp.previousPosition.set(worldX, worldY);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(worldX, worldY);
+
+        FixtureDef fixDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2.0f, height / 2.0f);
+        fixDef.shape = shape;
+        fixDef.isSensor = true;
+
+        checkpoint.addComponent(PhysicsSystem.createComponentFromDefinition(checkpoint, bodyDef, fixDef));
+
+        ContactListener listener = new ContactListener()
+        {
+            @Override
+            public void beginContact(Contact contact)
+            {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+                if(fixA.getBody().getUserData() != checkpoint)
+                {
+                    Fixture temp = fixA;
+                    fixA = fixB;
+                    fixB = temp;
+                }
+
+                if(fixA.getBody().getUserData() == checkpoint)
+                {
+                    Entity player = (Entity)fixB.getBody().getUserData();
+                    if(player.hasComponent(TagComponent.class))
+                    {
+                        if(player.getComponent(TagComponent.class).tag.equals("player"))
+                        {
+                            ecsEngine.fireEvent(new CheckpointEvent(checkpoint));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact)  {}
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold){}
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse)  {}
+        };
+
+        PhysicsSystem.addContactListener(listener);
     }
 
     private static void createWinZoneEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
@@ -281,15 +347,7 @@ public class LevelLoader
                     {
                         if(player.getComponent(TagComponent.class).tag.equals("player"))
                         {
-                            ecsEngine.fireEvent(new PlayerResetEvent(player));
-
-                            PhysicsComponent phys = player.getComponent(PhysicsComponent.class);
-
-                            for(JointEdge j : phys.body.getJointList())
-                            {
-                                Entity other = (Entity)j.other.getUserData();
-                                ecsEngine.fireEvent(new PlayerResetEvent(other));
-                            }
+                            player.addComponent(new RespawnComponent());
                         }
                     }
                 }

@@ -37,9 +37,15 @@ public class GameplayScreen extends GameScreen
         super(game);
         ecsEngine = new Engine();
 
+        ecsEngine.registerGameSystem(new RespawnSystem(ecsEngine));
         ecsEngine.registerGameSystem(new InputSystem(ecsEngine));
         ecsEngine.registerGameSystem(new AudioSystem(ecsEngine));
         ecsEngine.registerGameSystem(new InAirSystem(ecsEngine));
+        ecsEngine.registerGameSystem(new GameOverSystem(ecsEngine, () ->
+        {
+            MusicMaster.pauseMusic();
+            game.setScreen(new CutsceneScreen(game, gameResult));
+        }));;
 
         ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new BombSystem(ecsEngine));
@@ -47,11 +53,7 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerRenderSystem(new CameraUpdateSystem(ecsEngine));
         renderSystem = ecsEngine.registerRenderSystem(new RenderSystem(ecsEngine, RenderResources.getSpriteBatch()));
-        ecsEngine.registerRenderSystem(new GameOverSystem(ecsEngine, () ->
-        {
-            MusicMaster.pauseMusic();
-            game.setScreen(new CutsceneScreen(game, gameResult));
-        }));;
+
 
         loadLevelIntoECS();
 
