@@ -3,25 +3,18 @@ package com.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.core.*;
+import com.core.LevelLoader;
+import com.core.RenderResources;
 import com.ecs.Engine;
 import com.ecs.Entity;
-import com.ecs.components.*;
-import com.ecs.events.*;
+import com.ecs.components.GameOverComponent;
+import com.ecs.events.Event;
+import com.ecs.events.PauseEvent;
+import com.ecs.events.ResizeEvent;
+import com.ecs.events.StartEvent;
 import com.ecs.systems.*;
 
 
@@ -41,8 +34,8 @@ public class GameplayScreen extends GameScreen
 
         ecsEngine.registerGameSystem(new InputSystem(ecsEngine));
         ecsEngine.registerGameSystem(new AudioSystem(ecsEngine));
+        ecsEngine.registerGameSystem(new InAirSystem(ecsEngine));
 
-        ecsEngine.registerPhysicsSystem(new InAirSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new MovementSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new BombSystem(ecsEngine));
         ecsEngine.registerPhysicsSystem(new PhysicsSystem(ecsEngine));
@@ -126,7 +119,7 @@ public class GameplayScreen extends GameScreen
             unit += "m";
         }
 
-        timer.setText(String.format("Delivery Distance: %d%s", distance, unit));
+        timer.setText("Delivery Distance: " + distance + unit);
 
         renderAlpha = accumulator / physicsRate;
 

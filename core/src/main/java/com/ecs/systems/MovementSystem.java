@@ -1,10 +1,10 @@
 package com.ecs.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Queue;
 import com.core.GameConstants;
 import com.core.InputState;
 import com.ecs.Engine;
@@ -20,6 +20,9 @@ public class MovementSystem extends System
 {
     private ArrayMap<Entity, InputState> movementState = new ArrayMap<>();
 
+    private ComponentMapper<InputComponent> inputMapper = ComponentMapper.getFor(InputComponent.class);
+    private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+
     public MovementSystem(Engine engine)
     {
         super(engine);
@@ -33,7 +36,7 @@ public class MovementSystem extends System
     @Override
     public void updateEntity(Entity entity, float dt)
     {
-        PhysicsComponent p = entity.getComponent(PhysicsComponent.class);
+        PhysicsComponent p = physicsMapper.get(entity);
 
         if(movementState.containsKey(entity))
         {
@@ -73,9 +76,9 @@ public class MovementSystem extends System
 
             if(Math.abs(angularSpeed) > 0)
             {
-                p.body.applyTorque(angularSpeed * 0.03f * GameConstants.WORLD_SCALE, true);
+                p.body.applyTorque(angularSpeed * 0.05f * GameConstants.WORLD_SCALE, true);
                 float angularVel = p.body.getAngularVelocity();
-                angularVel = MathUtils.clamp(angularVel, -0.5f * GameConstants.WORLD_SCALE, 0.5f * GameConstants.WORLD_SCALE);
+                angularVel = MathUtils.clamp(angularVel, -0.5f, 0.5f);
                 p.body.setAngularVelocity(angularVel);
             }
             else

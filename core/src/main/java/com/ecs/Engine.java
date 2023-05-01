@@ -1,5 +1,8 @@
 package com.ecs;
 
+import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.utils.Array;
 import com.ecs.events.Event;
 
@@ -9,27 +12,34 @@ public class Engine
     private final Array<Entity> createdEntities = new Array<>();
     private final Array<Entity> deadEntities = new Array<>();
 
-    private final Array<System> renderSystems = new Array<>();
-    private final Array<System> physicsSystems = new Array<>();
-    private final Array<System> gameSystems = new Array<>();
+    private com.badlogic.ashley.core.Engine renderSystems;
+    private com.badlogic.ashley.core.Engine physicsSystems;
+    private com.badlogic.ashley.core.Engine gameSystems;
 
     private boolean isUpdating = false;
 
     private float physicsUpdateRate = 1.0f/60.f;
 
+    public Engine()
+    {
+        renderSystems = new com.badlogic.ashley.core.Engine();
+        physicsSystems = new com.badlogic.ashley.core.Engine();
+        gameSystems = new com.badlogic.ashley.core.Engine();
+    }
+
     public <T extends System> void registerPhysicsSystem(T system)
     {
-        physicsSystems.add(system);
+        physicsSystems.addSystem(system);
     }
 
     public <T extends System> void registerGameSystem(T system)
     {
-        gameSystems.add(system);
+        gameSystems.addSystem(system);
     }
 
     public <T extends System> void registerRenderSystem(T system)
     {
-        renderSystems.add(system);
+        renderSystems.addSystem(system);
     }
 
 
@@ -44,6 +54,9 @@ public class Engine
         else
         {
             activeEntities.add(e);
+            gameSystems.addEntity(e);
+            physicsSystems.addEntity(e);
+            renderSystems.addEntity(e);
         }
 
         return e;
@@ -69,18 +82,15 @@ public class Engine
         return getEntities(new Array<>(components));
     }
 
-    public Array<Entity> getEntities(Array<Class<? extends Component>> components)
+    public Array<Entity> getEntities(Array<Class> components)
     {
         Array<Entity> result = new Array<>();
+        ImmutableArray<com.badlogic.ashley.core.Entity> entities = gameSystems.getEntitiesFor(Family.all(components.toArray()).get());
 
-        for(Entity entity : activeEntities)
+        for(com.badlogic.ashley.core.Entity e : entities)
         {
-            if(entity.hasComponent(components))
-            {
-                result.add(entity);
-            }
+            result.add((Entity)e);
         }
-
         return result;
     }
 
@@ -98,13 +108,7 @@ public class Engine
     {
         isUpdating = true;
         {
-            for (int i = 0; i < physicsSystems.size; i++)
-            {
-                if(physicsSystems.get(i).isEnabled())
-                {
-                    physicsSystems.get(i).update(physicsUpdateRate);
-                }
-            }
+            physicsSystems.update(physicsUpdateRate);
         }
         isUpdating = false;
     }
@@ -113,91 +117,54 @@ public class Engine
     {
         isUpdating = true;
         {
-            for (int i = 0; i < gameSystems.size; i++)
-            {
-                if(gameSystems.get(i).isEnabled())
-                {
-                    gameSystems.get(i).update(dt);
-                }
-            }
+            gameSystems.update(dt);
         }
 
         isUpdating = false;
 
         activeEntities.removeAll(deadEntities, true);
+
+        for(Entity e : deadEntities)
+        {
+            gameSystems.removeEntity(e);
+            physicsSystems.removeEntity(e);
+            renderSystems.removeEntity(e);
+        }
         Entity.destroy(deadEntities);
         deadEntities.clear();
 
         activeEntities.addAll(createdEntities);
+        for(Entity e : createdEntities)
+        {
+            gameSystems.addEntity(e);
+            physicsSystems.addEntity(e);
+            renderSystems.addEntity(e);
+        }
+
         createdEntities.clear();
     }
 
     public void render(float alpha)
     {
-        for (int i = 0; i < renderSystems.size; i++)
-        {
-            if(renderSystems.get(i).isEnabled())
-            {
-                renderSystems.get(i).update(alpha);
-            }
-        }
+        renderSystems.update(alpha);
     }
 
     public void fireEvent(Event event)
     {
-        for (System s : physicsSystems)
+        for (EntitySystem sys : physicsSystems.getSystems())
         {
+            System s = (System)sys;
             s.receiveEvent(event);
         }
-        for (System s : gameSystems)
+        for (EntitySystem sys : gameSystems.getSystems())
         {
+            System s = (System)sys;
             s.receiveEvent(event);
         }
-        for (System s : renderSystems)
+        for (EntitySystem sys : renderSystems.getSystems())
         {
+            System s = (System)sys;
             s.receiveEvent(event);
-        }
-    }
-
-    public <T extends System> void enableSystem(Class<T> clazz)
-    {
-        for(System system : gameSystems)
-        {
-            if(system.getClass().equals(clazz))
-            {
-                system.setEnabled(true);
-                return;
-            }
-        }
-
-        for(System system : renderSystems)
-        {
-            if(system.getClass().equals(clazz))
-            {
-                system.setEnabled(true);
-                return;
-            }
-        }
-    }
-
-    public <T extends System> void disableSystem(Class<T> clazz)
-    {
-        for(System system : gameSystems)
-        {
-            if(system.getClass().equals(clazz))
-            {
-                system.setEnabled(false);
-                return;
-            }
-        }
-
-        for(System system : renderSystems)
-        {
-            if(system.getClass().equals(clazz))
-            {
-                system.setEnabled(true);
-                return;
-            }
         }
     }
 }

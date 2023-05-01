@@ -1,6 +1,6 @@
 package com.ecs.systems;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -28,7 +28,6 @@ public class PhysicsSystem extends System
     private static final Box2DDebugRenderer  debugRenderer = new Box2DDebugRenderer();
     Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
 
-
     public static PhysicsComponent createComponentFromDefinition(Entity entity, BodyDef def, FixtureDef fixDef)
     {
         PhysicsComponent result = new PhysicsComponent();
@@ -53,6 +52,10 @@ public class PhysicsSystem extends System
     private ArrayMap<Entity, Vector2> initialPositions = new ArrayMap<>();
     private Array<Entity> entitiesToReset = new Array<>();
     private boolean firstFrame = true;
+
+    private ComponentMapper<PositionComponent> posMapper = ComponentMapper.getFor(PositionComponent.class);
+    private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+    private ComponentMapper<DrawComponent> drawMapper = ComponentMapper.getFor(DrawComponent.class);
 
     public PhysicsSystem(Engine engine)
     {
@@ -96,10 +99,10 @@ public class PhysicsSystem extends System
         world.step(engine.getPhysicsUpdateRate(), 12, 12);
     }
 
-    private static void HandlePlayerRenderRotation(Entity player)
+    private void HandlePlayerRenderRotation(Entity player)
     {
-        PhysicsComponent phys = player.getComponent(PhysicsComponent.class);
-        DrawComponent d = player.getComponent(DrawComponent.class);
+        PhysicsComponent phys = physicsMapper.get(player);
+        DrawComponent d = drawMapper.get(player);
 
         if(!player.hasComponent(InAirComponent.class))
         {
@@ -144,8 +147,8 @@ public class PhysicsSystem extends System
 
     protected void updateEntity(Entity e, float dt)
     {
-        PositionComponent p = e.getComponent(PositionComponent.class);
-        PhysicsComponent phys = e.getComponent(PhysicsComponent.class);
+        PositionComponent p = posMapper.get(e);
+        PhysicsComponent phys = physicsMapper.get(e);
 
         if(entitiesToReset.contains(e, true))
         {
@@ -163,7 +166,7 @@ public class PhysicsSystem extends System
 
         if(e.hasComponent(DrawComponent.class))
         {
-            DrawComponent d = e.getComponent(DrawComponent.class);
+            DrawComponent d = drawMapper.get(e);
             d.rotation = MathUtils.radiansToDegrees * phys.body.getAngle();
         }
 

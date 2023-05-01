@@ -1,15 +1,23 @@
 package com.ecs.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.core.GameConstants;
+import com.core.RenderResources;
+import com.ecs.Component;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
@@ -25,21 +33,44 @@ public class RenderSystem extends System
 {
     private class Renderable
     {
-        final Vector2 position;
-        final DrawComponent draw;
-
-        public Renderable(Vector2 position, DrawComponent d)
-        {
-            this.position = position;
-            this.draw = d;
-        }
+        public Vector2 position = new Vector2();
+        public DrawComponent draw = new DrawComponent();
     }
+
+    private Pool<Renderable> renderablePool = new Pool<Renderable>(4096)
+    {
+        @Override
+        protected Renderable newObject()
+        {
+            return new Renderable();
+        }
+    };
+
+    private Pool<Vector2> vectorPool = new Pool<Vector2>(16)
+    {
+        @Override
+        protected Vector2 newObject()
+        {
+            return new Vector2();
+        }
+
+        @Override
+        protected void reset(Vector2 object)
+        {
+            object.setZero();
+        }
+    };
+    private Rectangle camRect = new Rectangle();
+    private Rectangle aabbRect = new Rectangle();
 
     private final Array<Renderable> renderables = new Array<>();
 
     private Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
 
     private final SpriteBatch sb;
+
+    private ComponentMapper<PositionComponent> posMapper = ComponentMapper.getFor(PositionComponent.class);
+    private ComponentMapper<DrawComponent> drawMapper = ComponentMapper.getFor(DrawComponent.class);
 
     public RenderSystem(Engine engine, SpriteBatch sb)
     {
@@ -79,14 +110,19 @@ public class RenderSystem extends System
     @Override
     public void updateEntity(Entity entity, float alpha)
     {
-        PositionComponent p = entity.getComponent(PositionComponent.class);
-        DrawComponent d = entity.getComponent(DrawComponent.class);
+        PositionComponent p = posMapper.get(entity);
+        DrawComponent d = drawMapper.get(entity);
 
-        Vector2 position = new Vector2();
-        position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
-        position.y = p.position.y * alpha + p.previousPosition.y * (1.0f - alpha);
+        Renderable renderable = renderablePool.obtain();
 
-        renderables.add(new Renderable(position, d));
+        if(!frustumCull(p.position, d.scale) || !frustumCull(p.previousPosition, d.scale))
+        {
+            renderable.position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
+            renderable.position.y = p.position.y * alpha + p.previousPosition.y * (1.0f - alpha);
+            renderable.draw = d;
+
+            renderables.add(renderable);
+        }
     }
 
     @Override
@@ -117,5 +153,68 @@ public class RenderSystem extends System
         }
 
         sb.end();
+
+        renderablePool.freeAll(renderables);
+    }
+
+    private boolean frustumCull(Vector2 p, Vector2 size)
+    {
+
+        float frustumBuffer = 2;
+
+        float viewWidth = viewport.getCamera().viewportWidth / 8 + frustumBuffer;
+        float viewHeight = viewport.getCamera().viewportHeight / 8 + frustumBuffer;
+
+        camRect.setPosition(viewport.getCamera().position.x - viewWidth / 2, viewport.getCamera().position.y - viewHeight / 2);
+        camRect.setSize(viewWidth, viewHeight);
+
+        Vector2 p0 = vectorPool.obtain();
+        Vector2 p1 = vectorPool.obtain();
+        Vector2 p2 = vectorPool.obtain();
+        Vector2 p3 = vectorPool.obtain();
+
+        p0.set(p).add(size.x / 2.0f, size.y / 2.0f);
+        p1.set(p).add(-size.x / 2.0f, -size.y / 2.0f);
+        p2.set(p).add(size.x / 2.0f, -size.y / 2.0f);
+        p3.set(p).add(-size.x / 2.0f, size.y / 2.0f);
+
+
+        Vector2 min = vectorPool.obtain().set(Float.MAX_VALUE, Float.MAX_VALUE);
+        Vector2 max = vectorPool.obtain().set(Float.MIN_VALUE, Float.MIN_VALUE);
+
+        if(p0.x < min.x) min.x = p0.x;
+        if(p1.x < min.x) min.x = p1.x;
+        if(p2.x < min.x) min.x = p2.x;
+        if(p3.x < min.x) min.x = p3.x;
+
+        if(p0.y < min.y) min.y = p0.y;
+        if(p1.y < min.y) min.y = p1.y;
+        if(p2.y < min.y) min.y = p2.y;
+        if(p3.y < min.y) min.y = p3.y;
+
+        if(p0.x > max.x) max.x = p0.x;
+        if(p1.x > max.x) max.x = p1.x;
+        if(p2.x > max.x) max.x = p2.x;
+        if(p3.x > max.x) max.x = p3.x;
+
+        if(p0.y > max.y) max.y = p0.y;
+        if(p1.y > max.y) max.y = p1.y;
+        if(p2.y > max.y) max.y = p2.y;
+        if(p3.y > max.y) max.y = p3.y;
+
+        aabbRect.set(min.x, min.y, max.x - min.x, max.y - min.y);
+
+        boolean result = !camRect.overlaps(aabbRect);
+
+        vectorPool.free(p0);
+        vectorPool.free(p1);
+        vectorPool.free(p2);
+        vectorPool.free(p3);
+
+        vectorPool.free(min);
+        vectorPool.free(max);
+
+
+        return result;
     }
 }

@@ -1,19 +1,27 @@
 package com.ecs;
 
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.utils.Array;
 import com.ecs.events.Event;
 
-public abstract class System
+public abstract class System extends com.badlogic.ashley.core.EntitySystem
 {
     private final Array<Class<? extends Component>> components = new Array<>();
     private final Array<Class<? extends Event>> events = new Array<>();
-    private boolean enabled = true;
 
     protected final Engine engine;
+    protected com.badlogic.ashley.core.Engine ashleyEngine;
 
     public System(Engine engine)
     {
+        super();
         this.engine = engine;
+    }
+
+    @Override
+    public void addedToEngine(com.badlogic.ashley.core.Engine engine)
+    {
+        ashleyEngine = engine;
     }
 
     public void registerComponentType(Class<? extends Component> clazz)
@@ -34,9 +42,15 @@ public abstract class System
     {
         preUpdate();
 
-        for(Entity e : engine.getEntities(components))
+        Class<? extends com.badlogic.ashley.core.Component>[] clazz = new Class[components.size];
+        for(int i = 0; i < components.size; i++)
         {
-            updateEntity(e, dt);
+            clazz[i] = components.get(i);
+        }
+
+        for(com.badlogic.ashley.core.Entity e : ashleyEngine.getEntitiesFor(Family.all(clazz).get()))
+        {
+            updateEntity((Entity)e, dt);
         }
 
         postUpdate();
@@ -57,14 +71,4 @@ public abstract class System
     protected void updateEntity(Entity entity, float dt) { }
 
     protected void postUpdate() {}
-
-    public boolean isEnabled()
-    {
-        return enabled;
-    }
-
-    public void setEnabled(boolean value)
-    {
-        enabled = value;
-    }
 }
