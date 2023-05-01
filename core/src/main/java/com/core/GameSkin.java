@@ -11,8 +11,8 @@ public class GameSkin extends Skin
         add("splash_title_font", RenderResources.getFont("retro", 128));
         add("splash_continue_font", RenderResources.getFont("retro", 32));
 
-        add("splash_title", new Label.LabelStyle(getFont("splash_title_font"), Color.WHITE));
-        add("splash_continue", new Label.LabelStyle(getFont("splash_continue_font"), Color.WHITE));
+        add("splash_title", new Label.LabelStyle(getFont("splash_title_font"), Color.BLACK));
+        add("splash_continue", new Label.LabelStyle(getFont("splash_continue_font"), Color.BLACK));
 
 
         //MAIN MENU UI/////////////////////////////////////////////////////////////////////////////////////
@@ -37,12 +37,12 @@ public class GameSkin extends Skin
         add("checkbox_settings_off", RenderResources.getTexture("ui/grey_box.png"));
 
         CheckBox.CheckBoxStyle checkboxStyle = new CheckBox.CheckBoxStyle();
-        checkboxStyle.checkboxOn = newDrawable("checkbox_settings_on", Color.WHITE);
+        checkboxStyle.checkboxOn = newDrawable("checkbox_settings_on", Color.GREEN);
         checkboxStyle.checkboxOnOver = newDrawable("checkbox_settings_on", Color.LIGHT_GRAY);
-        checkboxStyle.checkboxOff = newDrawable("checkbox_settings_off", Color.WHITE);
+        checkboxStyle.checkboxOff = newDrawable("checkbox_settings_off", Color.DARK_GRAY);
         checkboxStyle.checkboxOver = newDrawable("checkbox_settings_off", Color.LIGHT_GRAY);
         checkboxStyle.font = getFont("text_button_font");
-        checkboxStyle.fontColor = Color.WHITE;
+        checkboxStyle.fontColor = Color.BLACK;
 
         add("checkbox_settings", checkboxStyle);
 

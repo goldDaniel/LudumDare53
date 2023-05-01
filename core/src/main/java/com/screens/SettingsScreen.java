@@ -3,18 +3,24 @@ package com.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.core.RenderResources;
 
 public class SettingsScreen extends GameScreen
 {
+    private Image settingsImage;
     public SettingsScreen(Game game)
     {
         super(game);
+        settingsImage = new Image(new Texture("textures\\menu\\menu.png"));
+        settingsImage.setWidth(viewport.getWorldWidth());
+        settingsImage.setHeight(viewport.getWorldHeight());
     }
 
     @Override
@@ -68,5 +74,16 @@ public class SettingsScreen extends GameScreen
     public void render()
     {
         ScreenUtils.clear(0,0,0,1);
+        RenderResources.getSpriteBatch().begin();
+        settingsImage.draw(RenderResources.getSpriteBatch(), 1);
+        RenderResources.getSpriteBatch().end();
+    }
+
+    @Override
+    public void resize(int width, int height)
+    {
+        super.resize(width, height);
+        settingsImage.setWidth(viewport.getWorldWidth());
+        settingsImage.setHeight(viewport.getWorldHeight());
     }
 }

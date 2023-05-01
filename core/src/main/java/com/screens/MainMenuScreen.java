@@ -2,22 +2,25 @@ package com.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.core.MusicMaster;
+import com.core.RenderResources;
 
 public class MainMenuScreen extends GameScreen
 {
+    private Image menuImage;
     public MainMenuScreen(Game game)
     {
         super(game);
+        menuImage = new Image(new Texture("textures\\menu\\menu.png"));
+        menuImage.setWidth(viewport.getWorldWidth());
+        menuImage.setHeight(viewport.getWorldHeight());
     }
 
     @Override
@@ -81,6 +84,17 @@ public class MainMenuScreen extends GameScreen
     public void render()
     {
         ScreenUtils.clear(0,0,0,1);
+        RenderResources.getSpriteBatch().begin();
+        menuImage.draw(RenderResources.getSpriteBatch(), 1);
+        RenderResources.getSpriteBatch().end();
+    }
+
+    @Override
+    public void resize(int width, int height)
+    {
+        super.resize(width, height);
+        menuImage.setWidth(viewport.getWorldWidth());
+        menuImage.setHeight(viewport.getWorldHeight());
     }
 
     private TextButton createButton(String text, Action action, Table table, Skin skin)

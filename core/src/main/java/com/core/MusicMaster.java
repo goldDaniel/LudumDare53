@@ -30,11 +30,11 @@ public class MusicMaster
         if(currentSong != null && currentSong.isPlaying() && !currentSong.equals(song))
         {
             currentSong.stop();
+            song.setPosition(0);
         }
 
         currentSong = song;
         setVolume(volume);
-        currentSong.setPosition(0);
         currentSong.play();
     }
 

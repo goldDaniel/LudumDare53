@@ -87,6 +87,6 @@ public class SplashScreen extends GameScreen
     @Override
     public void render()
     {
-        ScreenUtils.clear(0,0,0,1);
+        ScreenUtils.clear(0.3f,0.3f,0.3f,1);
     }
 }
