@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,8 +34,8 @@ public class RenderSystem extends System
 {
     private class Renderable
     {
-        public Vector2 position = new Vector2();
-        public DrawComponent draw = new DrawComponent();
+        public final Vector2 position = new Vector2();
+        public final DrawComponent draw = new DrawComponent();
     }
 
     private Pool<Renderable> renderablePool = new Pool<Renderable>(4096)
@@ -43,6 +44,12 @@ public class RenderSystem extends System
         protected Renderable newObject()
         {
             return new Renderable();
+        }
+
+        @Override
+        protected void reset(Renderable r)
+        {
+            r.position.setZero();
         }
     };
 
@@ -63,6 +70,7 @@ public class RenderSystem extends System
     private Rectangle camRect = new Rectangle();
     private Rectangle aabbRect = new Rectangle();
 
+    private final Array<Renderable> tiles = new Array<>();
     private final Array<Renderable> renderables = new Array<>();
 
     private Viewport viewport = new ExtendViewport(GameConstants.CAMERA_DIMENSIONS,GameConstants.CAMERA_DIMENSIONS);
@@ -82,6 +90,27 @@ public class RenderSystem extends System
 
         registerEventType(ResizeEvent.class);
         registerEventType(CameraUpdateEvent.class);
+    }
+
+    public void submitTile(float x, float y, float width, float height, TextureRegion region)
+    {
+        Renderable tile = renderablePool.obtain();
+
+        tile.position.set(x, y);
+
+        tile.draw.texture.setTexture(region.getTexture());
+        tile.draw.texture.setRegionX(region.getRegionX());
+        tile.draw.texture.setRegionY(region.getRegionY());
+        tile.draw.texture.setRegionWidth(region.getRegionWidth());
+        tile.draw.texture.setRegionHeight(region.getRegionHeight());
+
+        tile.draw.scale.set(width, height);
+        tile.draw.flipX = false;
+        tile.draw.flipY = false;
+        tile.draw.rotation = 0;
+        tile.draw.currentColor.set(Color.WHITE);
+
+        tiles.add(tile);
     }
 
     protected void handleEvent(Event event)
@@ -115,11 +144,17 @@ public class RenderSystem extends System
 
         Renderable renderable = renderablePool.obtain();
 
-        if(!frustumCull(p.position, d.scale) || !frustumCull(p.previousPosition, d.scale))
+        //if(!frustumCull(p.position, d.scale) || !frustumCull(p.previousPosition, d.scale))
         {
             renderable.position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
             renderable.position.y = p.position.y * alpha + p.previousPosition.y * (1.0f - alpha);
-            renderable.draw = d;
+
+            renderable.draw.texture.setRegion(d.texture);
+            renderable.draw.scale.set(d.scale);
+            renderable.draw.flipX = d.flipX;
+            renderable.draw.flipY = d.flipY;
+            renderable.draw.rotation = d.rotation;
+            renderable.draw.currentColor.set(d.currentColor);
 
             renderables.add(renderable);
         }
@@ -150,6 +185,17 @@ public class RenderSystem extends System
                 width, height,
                 scaleX, scaleY,
                 d.rotation);
+        }
+
+        for(Renderable tile : tiles)
+        {
+            Vector2 pos = tile.position;
+            DrawComponent d = tile.draw;
+
+            float width = d.scale.x;
+            float height = d.scale.y;
+
+            sb.draw(d.texture, pos.x - width / 2, pos.y - height / 2, width, height);
         }
 
         sb.end();

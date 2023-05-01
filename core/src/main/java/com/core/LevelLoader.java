@@ -2,6 +2,7 @@ package com.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -15,6 +16,7 @@ import com.ecs.events.CollisionEndEvent;
 import com.ecs.events.CollisionStartEvent;
 import com.ecs.events.PlayerResetEvent;
 import com.ecs.systems.PhysicsSystem;
+import com.ecs.systems.RenderSystem;
 
 public class LevelLoader
 {
@@ -22,7 +24,7 @@ public class LevelLoader
     private static final String filepath = "levels\\";
 
 
-    public static void loadFromFile(Engine ecsEngine, String filename)
+    public static void loadFromFile(Engine ecsEngine, String filename, RenderSystem render)
     {
         String levelName = filepath + filename;
 
@@ -62,12 +64,12 @@ public class LevelLoader
             }
             if(collisionLayer != null)
             {
-                loadLevelTiles(ecsEngine, collisionLayer, worldXOffset, worldYOffset);
+                loadLevelTiles(ecsEngine, collisionLayer, worldXOffset, worldYOffset, render);
             }
         }
     }
 
-    private static void loadLevelTiles(Engine ecsEngine, JsonValue collisionLayer, float worldXOffset, float worldYOffset)
+    private static void loadLevelTiles(Engine ecsEngine, JsonValue collisionLayer, float worldXOffset, float worldYOffset, RenderSystem render)
     {
         String tilesetPath = filepath + collisionLayer.getString("__tilesetRelPath");
         Texture tileset = RenderResources.getTexture(tilesetPath);
@@ -85,18 +87,14 @@ public class LevelLoader
             int textureRegionX = tile.get("src").getInt(0);
             int textureRegionY = tile.get("src").getInt(1);
 
-            Entity tileEntity = ecsEngine.createEntity();
-            PositionComponent p = tileEntity.addComponent(new PositionComponent());
-            p.position.set(x, y);
-            p.previousPosition.set(p.position);
 
-            DrawComponent d = tileEntity.addComponent(new DrawComponent());
-            d.scale.set(GameConstants.WORLD_SCALE,GameConstants.WORLD_SCALE);
-            d.texture.setTexture(tileset);
-            d.texture.setRegionX(textureRegionX);
-            d.texture.setRegionY(textureRegionY);
-            d.texture.setRegionWidth(tileSize);
-            d.texture.setRegionHeight(tileSize);
+            TextureRegion region = new TextureRegion(tileset);
+            region.setRegionX(textureRegionX);
+            region.setRegionY(textureRegionY);
+            region.setRegionWidth(tileSize);
+            region.setRegionHeight(tileSize);
+
+            render.submitTile(x, y, GameConstants.WORLD_SCALE, GameConstants.WORLD_SCALE, region);
         }
 
         int worldWidthTiles = tileValues.length;
