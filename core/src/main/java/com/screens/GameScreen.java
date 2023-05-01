@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.core.GameSkin;
+import com.core.MusicMaster;
 import com.core.RenderResources;
 
 public abstract class GameScreen implements Screen
@@ -45,6 +46,8 @@ public abstract class GameScreen implements Screen
 
         uiStage.act(dt);
         this.update(dt);
+
+        MusicMaster.step();
 
         this.render();
         uiStage.draw();
