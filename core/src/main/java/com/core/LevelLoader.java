@@ -147,10 +147,8 @@ public class LevelLoader
     {
         for(JsonValue entity : entityLayer.get("entityInstances"))
         {
-            float worldX = entity.get("__grid").getFloat(0) + worldXOffset;
-            worldX *= GameConstants.WORLD_SCALE;
-            float worldY = -entity.get("__grid").getFloat(1) - worldYOffset;
-            worldY *= GameConstants.WORLD_SCALE;
+            float worldX = entity.get("__grid").getFloat(0) * GameConstants.WORLD_SCALE + worldXOffset;
+            float worldY = -entity.get("__grid").getFloat(1) * GameConstants.WORLD_SCALE - worldYOffset;
 
             if(entity.getString("__identifier").equals("Player"))
             {
