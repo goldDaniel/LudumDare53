@@ -40,25 +40,30 @@ public class MusicMaster
 
     public static void playSequentialMusic(boolean finalIsLooping, float volume, String... songNames)
     {
-        Music song = AudioResources.getMusic("audio\\music\\" + songNames[0] + ".wav");
-        boolean isLooping = false;
-        if(songNames.length > 1)
+        for(int i = 0; i < songNames.length - 1; i++)
         {
-            String[] nextSongNames = new String[songNames.length - 1];
-            System.arraycopy(songNames, 1, nextSongNames, 0, nextSongNames.length);
-
-            song.setOnCompletionListener((s) ->
+            Music song = AudioResources.getMusic("audio\\music\\" + songNames[i] + ".wav");
+            if(i == songNames.length - 2)
             {
-                MusicMaster.playSequentialMusic(finalIsLooping, volume, nextSongNames);
-            });
-        }
-        else
-        {
-            isLooping = finalIsLooping;
+                Music nextSong = AudioResources.getMusic("audio\\music\\" + songNames[i + 1] + ".wav");
+                song.setOnCompletionListener((s) ->
+                {
+                    nextSong.setLooping(finalIsLooping);
+                    setMusic(nextSong, volume);
+                });
+            }
+            else
+            {
+                Music nextSong = AudioResources.getMusic("audio\\music\\" + songNames[i + 1] + ".wav");
+                song.setOnCompletionListener((s) ->
+                {
+                    nextSong.setLooping(false);
+                    setMusic(nextSong, volume);
+                });
+            }
         }
 
-        song.setLooping(isLooping);
-        setMusic(song, volume);
+        setMusic(AudioResources.getMusic("audio\\music\\" + songNames[0] + ".wav"), volume);
     }
 
     public static void pauseMusic()

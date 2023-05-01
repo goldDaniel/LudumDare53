@@ -47,14 +47,14 @@ public class CutsceneScreen extends GameScreen
             }
             case LOSE:
             {
-                currIndices = new int[]{0, 5, 6, 7, 8};
+                currIndices = new int[]{0, 0, 5, 6, 7, 8};
                 numPictures = 9;
                 path += "outro\\outro_";
                 break;
             }
             case WIN:
             {
-                currIndices = new int[]{0, 1, 2, 3, 4, 0, 5, 6, 7, 8};
+                currIndices = new int[]{0, 0, 1, 2, 3, 4, 0, 5, 6, 7, 8};
                 numPictures = 9;
                 path += "outro\\outro_";
                 break;

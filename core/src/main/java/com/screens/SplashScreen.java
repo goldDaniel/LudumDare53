@@ -70,7 +70,7 @@ public class SplashScreen extends GameScreen
     public void buildUI(Table table, Skin skin)
     {
         table.top();
-        table.add(new Label("Ludum Dare 53", skin, "splash_title"));
+        table.add(new Label("Dough or Die", skin, "splash_title"));
         table.row();
 
         Label continueLabel = new Label("Press any key to continue", skin, "splash_continue");

@@ -12,9 +12,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.components.*;
-import com.ecs.events.CollisionEndEvent;
-import com.ecs.events.CollisionStartEvent;
-import com.ecs.events.PlayerResetEvent;
+import com.ecs.events.*;
 import com.ecs.systems.PhysicsSystem;
 import com.ecs.systems.RenderSystem;
 
@@ -171,7 +169,7 @@ public class LevelLoader
                 float width = entity.getFloat("width")  / tileSize * GameConstants.WORLD_SCALE;
                 float height = entity.getFloat("height") / tileSize * GameConstants.WORLD_SCALE;
 
-                createDeathZoneEntity(ecsEngine, worldX, worldY, width, height);
+                createWinZoneEntity(ecsEngine, worldX, worldY, width, height);
             }
         }
     }
@@ -219,7 +217,9 @@ public class LevelLoader
                     {
                         if(player.getComponent(TagComponent.class).tag.equals("player"))
                         {
-                            // win events
+                            Entity e = ecsEngine.createEntity();
+                            ecsEngine.fireEvent(new PauseEvent(null));
+                            e.addComponent(new GameOverComponent());
                         }
                     }
                 }
@@ -237,7 +237,6 @@ public class LevelLoader
 
         PhysicsSystem.addContactListener(listener);
     }
-
 
     private static void createDeathZoneEntity(Engine ecsEngine, float worldX, float worldY, float width, float height)
     {
