@@ -149,6 +149,11 @@ public class RenderSystem extends System
             renderable.position.x = p.position.x * alpha + p.previousPosition.x * (1.0f - alpha);
             renderable.position.y = p.position.y * alpha + p.previousPosition.y * (1.0f - alpha);
 
+            if(d.callback != null)
+            {
+                d.callback.execute(d.texture, 0.001f);
+            }
+
             renderable.draw.texture.setRegion(d.texture);
             renderable.draw.scale.set(d.scale);
             renderable.draw.flipX = d.flipX;

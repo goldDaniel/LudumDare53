@@ -8,6 +8,14 @@ import com.ecs.Component;
 
 public class DrawComponent extends Component
 {
+    public interface AnimationCallBack
+    {
+        void execute(TextureRegion region, float dt);
+    };
+
+
+    public AnimationCallBack callback = null;
+
     public final Color currentColor = Color.WHITE.cpy();
 
     public final TextureRegion texture = new TextureRegion(RenderResources.getTexture("textures/default.png"));

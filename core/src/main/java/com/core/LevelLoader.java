@@ -313,11 +313,30 @@ public class LevelLoader
         posComp.previousPosition.set(worldX, worldY);
 
         DrawComponent d = deathZone.addComponent(new DrawComponent());
+
+        d.callback = new DrawComponent.AnimationCallBack()
+        {
+            private float x = 0;
+            private float y = 0;
+
+            @Override
+            public void execute(TextureRegion region, float dt)
+            {
+                x -= 0.5f;
+                y -= 0.5f;
+                region.setRegionX(MathUtils.round(x));
+                region.setRegionY(MathUtils.round(y));
+
+                region.setRegionWidth((int)Math.max(d.texture.getTexture().getWidth(), d.texture.getTexture().getWidth() * width));
+                region.setRegionHeight((int)Math.max(d.texture.getTexture().getHeight(), d.texture.getTexture().getHeight() *  height));
+            }
+        };
+
         d.scale.set(width, height);
         d.texture.setTexture(RenderResources.getTexture("textures/entities/lava.png"));
         d.texture.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         d.texture.setRegionX(0);
-        d.texture.setRegionX(0);
+        d.texture.setRegionY(0);
         d.texture.setRegionWidth((int)Math.max(d.texture.getTexture().getWidth(), d.texture.getTexture().getWidth() * width));
         d.texture.setRegionHeight((int)Math.max(d.texture.getTexture().getHeight(), d.texture.getTexture().getHeight() *  height));
 
