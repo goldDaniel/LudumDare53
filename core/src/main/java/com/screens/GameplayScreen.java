@@ -51,7 +51,7 @@ public class GameplayScreen extends GameScreen
 
         loadLevelIntoECS();
 
-        MusicMaster.playSequentialMusic(true, "level_start", "level_loop");
+        MusicMaster.playSequentialMusic(true, 0.5f, "level_start", "level_loop");
 
         ecsEngine.fireEvent(new StartEvent(null));
     }
@@ -85,7 +85,7 @@ public class GameplayScreen extends GameScreen
         table.add(timer);
     }
 
-    private static final float TIME_LIMIT = 10;
+    private static final float TIME_LIMIT = 60;
     private static final float PIZZA_GUY_SPEED = 50;
     private static final float KPH_TO_MPS = 3.6f;
     @Override

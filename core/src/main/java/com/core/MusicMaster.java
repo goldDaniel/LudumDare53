@@ -14,14 +14,16 @@ public class MusicMaster
         hasInitialized = true;
     }
 
-    public static void setMusic(Music song)
+    public static void setMusic(Music song, float volume)
     {
         pauseMusic();
         currentSong = song;
+        setVolume(volume);
+        currentSong.setPosition(0);
         currentSong.play();
     }
 
-    public static void playMusic(String songName, boolean isLooping)
+    public static void playMusic(String songName, boolean isLooping, float volume)
     {
         Music song = AudioResources.getMusic("audio\\music\\" + songName + ".wav");
         song.setLooping(isLooping);
@@ -31,10 +33,12 @@ public class MusicMaster
         }
 
         currentSong = song;
+        setVolume(volume);
+        currentSong.setPosition(0);
         currentSong.play();
     }
 
-    public static void playSequentialMusic(boolean finalIsLooping, String... songNames)
+    public static void playSequentialMusic(boolean finalIsLooping, float volume, String... songNames)
     {
         Music song = AudioResources.getMusic("audio\\music\\" + songNames[0] + ".wav");
         boolean isLooping = false;
@@ -45,7 +49,7 @@ public class MusicMaster
 
             song.setOnCompletionListener((s) ->
             {
-                MusicMaster.playSequentialMusic(finalIsLooping, nextSongNames);
+                MusicMaster.playSequentialMusic(finalIsLooping, volume, nextSongNames);
             });
         }
         else
@@ -54,7 +58,7 @@ public class MusicMaster
         }
 
         song.setLooping(isLooping);
-        setMusic(song);
+        setMusic(song, volume);
     }
 
     public static void pauseMusic()

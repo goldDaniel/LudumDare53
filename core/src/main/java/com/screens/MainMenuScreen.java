@@ -68,7 +68,7 @@ public class MainMenuScreen extends GameScreen
     public void show()
     {
         super.show();
-        MusicMaster.playMusic("menu", true);
+        MusicMaster.playMusic("menu", true, 1);
     }
 
     @Override

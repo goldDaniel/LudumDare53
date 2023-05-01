@@ -79,7 +79,7 @@ public class BombSystem extends System
                     up.rotateRad(-(float)Math.PI / 2.f);
                 }
 
-                p.body.applyLinearImpulse(up.scl(0.3f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
+                p.body.applyLinearImpulse(up.scl(0.2f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
             }
             else if(goForward)
             {
@@ -94,7 +94,7 @@ public class BombSystem extends System
                     angle += 2 * Math.PI;
                 }
                 forward.rotateRad(angle);
-                p.body.applyLinearImpulse(forward.scl(0.5f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
+                p.body.applyLinearImpulse(forward.scl(0.3f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
             }
 
             if(goUp || goForward)
