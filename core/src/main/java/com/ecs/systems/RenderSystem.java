@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -196,11 +197,12 @@ public class RenderSystem extends System
         {
             Vector2 pos = tile.position;
             DrawComponent d = tile.draw;
-
-            float width = d.scale.x;
-            float height = d.scale.y;
-
-            sb.draw(d.texture, pos.x - width / 2, pos.y - height / 2, width, height);
+            if(!frustumCull(pos, d.scale))
+            {
+                float width = d.scale.x;
+                float height = d.scale.y;
+                sb.draw(d.texture, pos.x - width / 2, pos.y - height / 2, width, height);
+            }
         }
 
         sb.end();
@@ -210,65 +212,18 @@ public class RenderSystem extends System
 
     private boolean frustumCull(Vector2 p, Vector2 size)
     {
+        float camRadius = Math.max(viewport.getCamera().viewportWidth, viewport.getCamera().viewportHeight) * 1.414f;
+        float objRadius = Math.max(size.x, size.y) * 1.414f;
 
-        float frustumBuffer = 1;
+        float dX = p.x - viewport.getCamera().position.x;
+        dX *= dX;
 
-        float viewWidth = viewport.getCamera().viewportWidth + frustumBuffer;
-        float viewHeight = viewport.getCamera().viewportHeight + frustumBuffer;
+        float dY = p.y - viewport.getCamera().position.y;
+        dY *= dY;
 
-        camRect.setPosition(viewport.getCamera().position.x - viewWidth / 2, viewport.getCamera().position.y - viewHeight / 2);
-        camRect.setSize(viewWidth, viewHeight);
+        float r2 = (camRadius + objRadius);
+        r2 *= r2;
 
-        Vector2 p0 = vectorPool.obtain();
-        Vector2 p1 = vectorPool.obtain();
-        Vector2 p2 = vectorPool.obtain();
-        Vector2 p3 = vectorPool.obtain();
-
-        p0.set(p).add(size.x / 2.0f, size.y / 2.0f);
-        p1.set(p).add(-size.x / 2.0f, -size.y / 2.0f);
-        p2.set(p).add(size.x / 2.0f, -size.y / 2.0f);
-        p3.set(p).add(-size.x / 2.0f, size.y / 2.0f);
-
-
-        Vector2 min = vectorPool.obtain().set(Float.MAX_VALUE, Float.MAX_VALUE);
-        Vector2 max = vectorPool.obtain().set(Float.MIN_VALUE, Float.MIN_VALUE);
-
-        if(p0.x < min.x) min.x = p0.x;
-        if(p1.x < min.x) min.x = p1.x;
-        if(p2.x < min.x) min.x = p2.x;
-        if(p3.x < min.x) min.x = p3.x;
-
-        if(p0.y < min.y) min.y = p0.y;
-        if(p1.y < min.y) min.y = p1.y;
-        if(p2.y < min.y) min.y = p2.y;
-        if(p3.y < min.y) min.y = p3.y;
-
-        if(p0.x > max.x) max.x = p0.x;
-        if(p1.x > max.x) max.x = p1.x;
-        if(p2.x > max.x) max.x = p2.x;
-        if(p3.x > max.x) max.x = p3.x;
-
-        if(p0.y > max.y) max.y = p0.y;
-        if(p1.y > max.y) max.y = p1.y;
-        if(p2.y > max.y) max.y = p2.y;
-        if(p3.y > max.y) max.y = p3.y;
-
-        float width = Math.abs(max.x - min.x);
-        float height = Math.abs(max.x - min.x);
-
-        aabbRect.set(min.x, min.y, width, height);
-
-        boolean result = !camRect.overlaps(aabbRect);
-
-        vectorPool.free(p0);
-        vectorPool.free(p1);
-        vectorPool.free(p2);
-        vectorPool.free(p3);
-
-        vectorPool.free(min);
-        vectorPool.free(max);
-
-
-        return result;
+        return !(dX + dY <= r2);
     }
 }
