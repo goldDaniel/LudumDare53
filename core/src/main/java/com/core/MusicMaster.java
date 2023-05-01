@@ -7,6 +7,7 @@ public class MusicMaster
 {
     private static boolean hasInitialized = false;
 
+    private static float volumeFactor = 1;
     private static Music currentSong;
     private static Queue<Music> queuedSongs = new Queue<>();
 
@@ -76,6 +77,7 @@ public class MusicMaster
             {
                 currentSong = queuedSongs.removeFirst();
                 currentSong.play();
+                setVolumeRelative(volumeFactor);
             }
         }
     }
@@ -92,6 +94,7 @@ public class MusicMaster
 
     public static void setVolumeRelative(float factor)
     {
+        volumeFactor = Math.min(Math.max(factor, 0.f), 1.f);
         if(currentSong!= null) currentSong.setVolume(currentSong.getVolume() * factor);
     }
 }
