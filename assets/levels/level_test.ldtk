@@ -1528,8 +1528,8 @@
 			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
-			"pivotX": 0,
-			"pivotY": 0,
+			"pivotX": 0.5,
+			"pivotY": 0.5,
 			"fieldDefs": []
 		}
 	], "tilesets": [
@@ -2781,7 +2781,7 @@
 						{
 							"__identifier": "Checkpoint",
 							"__grid": [13,64],
-							"__pivot": [0,0],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
 							"__tile": null,
 							"__smartColor": "#2CE8F5",
@@ -27753,8 +27753,8 @@
 					"entityInstances": [
 						{
 							"__identifier": "Checkpoint",
-							"__grid": [22,40],
-							"__pivot": [0,0],
+							"__grid": [23,55],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
 							"__tile": null,
 							"__smartColor": "#2CE8F5",
@@ -27762,7 +27762,7 @@
 							"width": 64,
 							"height": 992,
 							"defUid": 66,
-							"px": [720,1280],
+							"px": [752,1760],
 							"fieldInstances": []
 						}
 					]
@@ -40049,8 +40049,8 @@
 					"entityInstances": [
 						{
 							"__identifier": "Checkpoint",
-							"__grid": [66,26],
-							"__pivot": [0,0],
+							"__grid": [66,40],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
 							"__tile": null,
 							"__smartColor": "#2CE8F5",
@@ -40058,7 +40058,7 @@
 							"width": 16,
 							"height": 896,
 							"defUid": 66,
-							"px": [2112,832],
+							"px": [2112,1280],
 							"fieldInstances": []
 						}
 					]
