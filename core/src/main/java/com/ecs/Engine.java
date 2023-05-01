@@ -118,6 +118,8 @@ public class Engine
 
     public void gameUpdate(float dt)
     {
+        if(dt >= physicsUpdateRate) dt =physicsUpdateRate;
+
         isUpdating = true;
         {
             gameSystems.update(dt);
