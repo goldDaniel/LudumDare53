@@ -497,9 +497,13 @@ public class LevelLoader
 
         ContactListener listener = new ContactListener()
         {
+            boolean hasCollided = false;
+
             @Override
             public void beginContact(Contact contact)
             {
+                hasCollided = true;
+
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
                 if(fixA.getBody().getUserData() != wheel)
@@ -523,6 +527,9 @@ public class LevelLoader
             @Override
             public void endContact(Contact contact)
             {
+                if(!hasCollided) return;
+                hasCollided = false;
+
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
                 if(fixA.getBody().getUserData() != wheel)
