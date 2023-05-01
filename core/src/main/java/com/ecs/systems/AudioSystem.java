@@ -57,16 +57,16 @@ public class AudioSystem extends System
             }
             else
             {
-                sounds.addLast(new Audio("audio\\sfx\\idle.wav", 0.1f * AudioResources.getMasterVolume(), true));
+                sounds.addLast(new Audio("audio\\sfx\\idle.wav", 0.3f * AudioResources.getMasterVolume(), true));
             }
         }
         else if(event instanceof BombEvent)
         {
-            sounds.addLast(new Audio("audio\\sfx\\explosion.ogg", 0.2f * AudioResources.getMasterVolume(), false));
+            sounds.addLast(new Audio("audio\\sfx\\explosion.ogg", 0.4f * AudioResources.getMasterVolume(), false));
         }
         else if(event instanceof LandEvent)
         {
-            sounds.addLast(new Audio("audio\\sfx\\land.wav", 0.1f * AudioResources.getMasterVolume(), false));
+            sounds.addLast(new Audio("audio\\sfx\\land.wav", 0.3f * AudioResources.getMasterVolume(), false));
         }
         else if(event instanceof PauseEvent)
         {

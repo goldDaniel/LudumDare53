@@ -77,10 +77,12 @@ public class CutsceneScreen extends GameScreen
         else if(type == CutsceneType.LOSE)
         {
             MusicMaster.playMusic("outro_loop", true, 1);
+            MusicMaster.setVolumeRelative(0.5f);
         }
         else
         {
             MusicMaster.playSequentialMusic(true, 1, "outro_start", "outro_loop");
+            MusicMaster.setVolumeRelative(0.5f);
         }
     }
 

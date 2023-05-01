@@ -33,6 +33,8 @@ public class InputSystem extends System
 
         state.action = Gdx.input.isKeyJustPressed(i.action);
 
+        state.reset = Gdx.input.isKeyJustPressed(i.reset);
+
 
         engine.fireEvent(new MovementEvent(entity, state));
     }

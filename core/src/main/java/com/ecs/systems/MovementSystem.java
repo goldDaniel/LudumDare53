@@ -13,6 +13,7 @@ import com.ecs.System;
 import com.ecs.components.InAirComponent;
 import com.ecs.components.InputComponent;
 import com.ecs.components.PhysicsComponent;
+import com.ecs.components.RespawnComponent;
 import com.ecs.events.Event;
 import com.ecs.events.MovementEvent;
 
@@ -72,6 +73,11 @@ public class MovementSystem extends System
                 {
                     speed.x += 1;
                 }
+            }
+
+            if(i.reset && !entity.hasComponent(RespawnComponent.class))
+            {
+                entity.addComponent(new RespawnComponent());
             }
 
             if(Math.abs(angularSpeed) > 0)
@@ -139,6 +145,7 @@ public class MovementSystem extends System
                 if(state.down) current.down = true;
 
                 if(state.action) current.action = true;
+                if(state.reset) current.reset = true;
             }
             else
             {

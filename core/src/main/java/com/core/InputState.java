@@ -6,7 +6,6 @@ public class InputState
     public boolean right = false;
     public boolean up = false;
     public boolean down = false;
-
-
     public boolean action = false;
+    public boolean reset = false;
 }

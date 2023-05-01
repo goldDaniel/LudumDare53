@@ -11,4 +11,6 @@ public class InputComponent extends Component
     public int down =  Input.Keys.DOWN;
 
     public int action = Input.Keys.X;
+
+    public int reset = Input.Keys.R;
 }
