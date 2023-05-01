@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.core.MusicMaster;
 import com.core.RenderResources;
 import com.ecs.events.StartEvent;
 
@@ -23,6 +24,20 @@ public class PauseScreen extends GameScreen
     {
         super(game);
         this.gameScreen = gameScreen;
+    }
+
+    @Override
+    public void show()
+    {
+        super.show();
+        MusicMaster.setVolumeRelative(0.4f);
+    }
+
+    @Override
+    public void hide()
+    {
+        super.hide();
+        MusicMaster.setVolumeRelative(1 / 0.4f);
     }
 
     @Override
@@ -39,7 +54,6 @@ public class PauseScreen extends GameScreen
             public void changed(ChangeEvent event, Actor actor)
             {
                 game.setScreen(gameScreen);
-                ((GameplayScreen)gameScreen).doEvent(new StartEvent(null));
             }
         });
         table.add(resumeButton).padTop(100).row();
@@ -67,7 +81,6 @@ public class PauseScreen extends GameScreen
     {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
-            ((GameplayScreen)gameScreen).doEvent(new StartEvent(null));
             game.setScreen(gameScreen);
         }
     }

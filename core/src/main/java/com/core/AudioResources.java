@@ -12,7 +12,7 @@ public class AudioResources
     private static ArrayMap<String, Sound> soundEffects;
     private static ArrayMap<String, Music> music;
 
-    private static float masterVolume = 1.f;
+    private static float masterVolume = 0.5f;
 
     public static void init()
     {
