@@ -160,10 +160,10 @@ public class RenderSystem extends System
     private boolean frustumCull(Vector2 p, Vector2 size)
     {
 
-        float frustumBuffer = 2;
+        float frustumBuffer = 1;
 
-        float viewWidth = viewport.getCamera().viewportWidth / 8 + frustumBuffer;
-        float viewHeight = viewport.getCamera().viewportHeight / 8 + frustumBuffer;
+        float viewWidth = viewport.getCamera().viewportWidth + frustumBuffer;
+        float viewHeight = viewport.getCamera().viewportHeight + frustumBuffer;
 
         camRect.setPosition(viewport.getCamera().position.x - viewWidth / 2, viewport.getCamera().position.y - viewHeight / 2);
         camRect.setSize(viewWidth, viewHeight);
@@ -202,7 +202,10 @@ public class RenderSystem extends System
         if(p2.y > max.y) max.y = p2.y;
         if(p3.y > max.y) max.y = p3.y;
 
-        aabbRect.set(min.x, min.y, max.x - min.x, max.y - min.y);
+        float width = Math.abs(max.x - min.x);
+        float height = Math.abs(max.x - min.x);
+
+        aabbRect.set(min.x, min.y, width, height);
 
         boolean result = !camRect.overlaps(aabbRect);
 
