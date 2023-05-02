@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -85,7 +86,7 @@ public class GameplayScreen extends GameScreen
     public void buildUI(Table table, Skin skin)
     {
         table.top().left();
-        timer = new Label("Bomb Delivery Dist: " + Math.max((TIME_LIMIT - elapsedTime) * PIZZA_GUY_SPEED, 0.f), skin, "splash_continue");
+        timer = new Label("Bomb Delivery Dist: " + Math.max((TIME_LIMIT - elapsedTime) * PIZZA_GUY_SPEED, 0.f), skin, "bomb_text");
         table.add(timer);
     }
 

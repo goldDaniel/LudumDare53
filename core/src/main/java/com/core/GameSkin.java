@@ -14,6 +14,8 @@ public class GameSkin extends Skin
         add("splash_title", new Label.LabelStyle(getFont("splash_title_font"), Color.BLACK));
         add("splash_continue", new Label.LabelStyle(getFont("splash_continue_font"), Color.BLACK));
 
+        add("bomb_text", new Label.LabelStyle(getFont("splash_continue_font"), Color.WHITE));
+
 
         //MAIN MENU UI/////////////////////////////////////////////////////////////////////////////////////
         add("text_button_font", RenderResources.getFont("retro", 32));

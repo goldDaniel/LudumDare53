@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -81,6 +78,8 @@ public class RenderSystem extends System
     private ComponentMapper<PositionComponent> posMapper = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<DrawComponent> drawMapper = ComponentMapper.getFor(DrawComponent.class);
 
+    private Array<Texture> backgrounds = new Array<>();
+
     public RenderSystem(Engine engine, SpriteBatch sb)
     {
         super(engine);
@@ -91,6 +90,12 @@ public class RenderSystem extends System
 
         registerEventType(ResizeEvent.class);
         registerEventType(CameraUpdateEvent.class);
+
+        for(int i = 0; i <= 7; i++)
+        {
+            backgrounds.add(RenderResources.getTexture("textures/background/" + i + ".png"));
+        }
+
     }
 
     public void submitTile(float x, float y, float width, float height, TextureRegion region)
@@ -134,7 +139,6 @@ public class RenderSystem extends System
     public void preUpdate()
     {
         renderables.clear();
-        sb.setProjectionMatrix(viewport.getCamera().combined);
     }
 
     @Override
@@ -169,7 +173,17 @@ public class RenderSystem extends System
     @Override
     public void postUpdate()
     {
+        sb.setProjectionMatrix(new Matrix4().idt());
+        sb.begin();
+        for (Texture bg : backgrounds)
+        {
+            sb.draw(bg, -1f, -1f, 2f, 2f);
+        }
+        sb.end();
+
+
         renderables.sort(Comparator.comparingInt(r -> r.draw.texture.getTexture().glTarget));
+        sb.setProjectionMatrix(viewport.getCamera().combined);
         sb.begin();
 
         for(Renderable r : renderables)
