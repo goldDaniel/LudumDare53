@@ -43,6 +43,7 @@ public class GameplayScreen extends GameScreen
         ecsEngine.registerGameSystem(new InAirSystem(ecsEngine));
         ecsEngine.registerGameSystem(new GameOverSystem(ecsEngine, () ->
         {
+            ecsEngine.fireEvent(new PauseEvent(null));
             game.setScreen(new CutsceneScreen(game, gameResult));
         }));;
 
