@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -22,6 +23,7 @@ import com.ecs.Entity;
 import com.ecs.System;
 import com.ecs.components.DrawComponent;
 import com.ecs.components.PositionComponent;
+import com.ecs.events.BombEvent;
 import com.ecs.events.CameraUpdateEvent;
 import com.ecs.events.Event;
 import com.ecs.events.ResizeEvent;
@@ -68,6 +70,7 @@ public class RenderSystem extends System
     private Rectangle camRect = new Rectangle();
     private Rectangle aabbRect = new Rectangle();
 
+
     private final Array<Renderable> tiles = new Array<>();
     private final Array<Renderable> renderables = new Array<>();
 
@@ -78,7 +81,18 @@ public class RenderSystem extends System
     private ComponentMapper<PositionComponent> posMapper = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<DrawComponent> drawMapper = ComponentMapper.getFor(DrawComponent.class);
 
+    private Array<TextureRegion> explosion = new Array<>();
+
     private Array<Texture> backgrounds = new Array<>();
+
+    class AnimExplosion
+    {
+        public Vector2 pos = new Vector2();
+        float stateTime = 0;
+        public Animation<TextureRegion> animation = new Animation<>(0.016f, explosion, Animation.PlayMode.LOOP);
+    }
+
+    private Array<AnimExplosion> animations = new Array<>();
 
     public RenderSystem(Engine engine, SpriteBatch sb)
     {
@@ -90,12 +104,27 @@ public class RenderSystem extends System
 
         registerEventType(ResizeEvent.class);
         registerEventType(CameraUpdateEvent.class);
+        registerEventType(BombEvent.class);
 
         for(int i = 0; i <= 7; i++)
         {
             backgrounds.add(RenderResources.getTexture("textures/background/" + i + ".png"));
         }
 
+        Texture explosionTex = RenderResources.getTexture("textures/entities/explosion.png");
+        for(int i = 0; i < 4; i++)
+        {
+            for(int j = 0; j < 4; j++)
+            {
+                int regionX = j * 64;
+                int regionY = i * 64;
+
+                int regionW = 64;
+                int regionH = 64;
+
+                explosion.add(new TextureRegion(explosionTex, regionX,regionY, regionW, regionH));
+            }
+        }
     }
 
     public void submitTile(float x, float y, float width, float height, TextureRegion region)
@@ -132,6 +161,15 @@ public class RenderSystem extends System
             CameraUpdateEvent e = (CameraUpdateEvent)event;
             viewport.setCamera(e.cam);
             viewport.apply();
+        }
+        else if(event instanceof BombEvent)
+        {
+            BombEvent b = (BombEvent)event;
+
+            AnimExplosion ex = new AnimExplosion();
+            ex.pos.set(b.pos);
+
+            animations.add(ex);
         }
     }
 
@@ -185,6 +223,21 @@ public class RenderSystem extends System
         renderables.sort(Comparator.comparingInt(r -> r.draw.texture.getTexture().glTarget));
         sb.setProjectionMatrix(viewport.getCamera().combined);
         sb.begin();
+
+        Array<AnimExplosion> toRemove = new Array<>();
+        for(AnimExplosion e : animations)
+        {
+            if(e.animation.isAnimationFinished(e.stateTime))
+            {
+                toRemove.add(e);
+            }
+            else
+            {
+                sb.draw(e.animation.getKeyFrame(e.stateTime), e.pos.x, e.pos.y, 1f,1f);
+                e.stateTime += 0.008f;
+            }
+        }
+        animations.removeAll(toRemove, true);
 
         for(Renderable r : renderables)
         {

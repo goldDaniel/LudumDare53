@@ -8,10 +8,7 @@ import com.core.InputState;
 import com.ecs.Engine;
 import com.ecs.Entity;
 import com.ecs.System;
-import com.ecs.components.BombComponent;
-import com.ecs.components.InAirComponent;
-import com.ecs.components.InputComponent;
-import com.ecs.components.PhysicsComponent;
+import com.ecs.components.*;
 import com.ecs.events.BombEvent;
 import com.ecs.events.Event;
 import com.ecs.events.LandEvent;
@@ -80,6 +77,13 @@ public class BombSystem extends System
                 }
 
                 p.body.applyLinearImpulse(up.scl(0.2f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
+
+                DrawComponent draw = entity.getComponent(DrawComponent.class);
+
+                Vector2 pos = p.body.getPosition().cpy();
+                pos.sub(up.nor().scl(draw.scale.y / 4));
+
+                engine.fireEvent(new BombEvent(entity, pos));
             }
             else if(goForward)
             {
@@ -95,11 +99,14 @@ public class BombSystem extends System
                 }
                 forward.rotateRad(angle);
                 p.body.applyLinearImpulse(forward.scl(0.3f * GameConstants.WORLD_SCALE), p.body.getPosition(), true);
-            }
 
-            if(goUp || goForward)
-            {
-                engine.fireEvent(new BombEvent(entity));
+
+                DrawComponent draw = entity.getComponent(DrawComponent.class);
+
+                Vector2 pos = p.body.getPosition().cpy();
+                pos.sub(forward.nor().scl(draw.scale.x / 4));
+
+                engine.fireEvent(new BombEvent(entity, pos));
             }
         }
     }
